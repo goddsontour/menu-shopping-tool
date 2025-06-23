@@ -267,24 +267,19 @@ def create_pdf(title, ingredients, method, shopping_categories=None):
 
     return pdf.output(dest='S').encode('latin1')
 
+import re
+
 def display_recipe(title, ingredients, method):
     st.subheader(title)
     st.markdown('**Ingredients**')
     for item in ingredients:
-        st.text(item)  # Each ingredient as a plain line, no dashes, no bullets
+        st.markdown(f"{item}")
+
     st.markdown('**Method**')
     for i, step in enumerate(method, 1):
-        st.markdown(f'{i}. {step}')
-
-def display_shopping(categories):
-    st.subheader('Shopping List')
-    for sec, items in categories.items():
-        st.markdown(f'**{sec}**')
-        if items:
-            for it in items:
-                st.markdown(f'- {it}')
-        else:
-            st.markdown('- none')
+        # Remove leading numbers, periods, spaces (like "1. " or "1) " or "1 ")
+        clean_step = re.sub(r'^\s*\d+\s*[\.\)]?\s*', '', step)
+        st.markdown(f"{i}. {clean_step}")
 
 def main():
     st.title('Recipe & Shopping List Generator')
