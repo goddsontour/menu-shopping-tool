@@ -1,66 +1,72 @@
 import streamlit as st
 
-st.set_page_config(
-    page_title="Kind Kitchen",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
-st.write("🔒 Login screen loaded")
 def show_login():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
-
-    # Custom CSS for background, circle, centering, and short password box
     st.markdown("""
     <style>
-    .stApp {
+    body, .stApp {
         background-color: #f5f5f5;
     }
-    .block-container {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-    }
     .login-outer {
-        text-align: center;
-        margin-top: 40px;
-    }
-    .welcome-circle {
-        width: 280px;
-        height: 280px;
-        border-radius: 50%;
-        background: white;
-        box-shadow: 0 4px 24px #bbb4;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-    .welcome-text {
-        color: #1976d2;
-        font-size: 2rem;
-        font-weight: 700;
-        text-align: center;
-        font-family: 'DejaVu Sans', Arial, sans-serif;
-        line-height: 1.3;
-    }
-    .login-box {
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
     }
-    .stTextInput input[type="password"] {
-        width: 180px !important;
-        font-size: 1.15rem !important;
+    .welcome-circle {
+        width: 540px;
+        height: 540px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 6px 48px #bbb4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 36px auto;
+    }
+    .welcome-text {
+        color: #1976d2;
+        font-size: 2.8rem;
+        font-weight: 800;
         text-align: center;
-        border-radius: 6px !important;
+        letter-spacing: 0.5px;
+        font-family: 'DejaVu Sans', Arial, sans-serif;
     }
-    .stButton button {
-        width: 180px !important;
-        margin-top: 8px;
-        font-size: 1.1rem;
+    .login-box {
+        width: 340px;
+        margin: 0 auto;
     }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="login-outer">', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="welcome-circle">'
+        '<div class="welcome-text">'
+        'Welcome<br>to<br>Kind Kitchen'
+        '</div></div>',
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
+    pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
+    login = st.button("Login", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)  # Close login-box
+
+    st.markdown('</div>', unsafe_allow_html=True)  # Close login-outer
+
+    if login:
+        if pwd == st.secrets["app_password"]:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Incorrect password. Please try again.")
+
+if "authenticated" not in st.session_state or not st.session_state.authenticated:
+    show_login()
+    st.stop()
 
 # --------- FULL KEYWORDS DICTIONARY HERE! ---------
 KEYWORDS = {
