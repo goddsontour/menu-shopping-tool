@@ -1,27 +1,79 @@
 import streamlit as st
-import io
-import zipfile
-import re
-from fpdf import FPDF
 
-# --- Password protection in sidebar ---
+# --- Page config & custom CSS (login shares home bg) ---
+st.set_page_config(
+    page_title="Recipe & Shopping List Generator",
+    page_icon=":shallow_pan_of_food:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+st.markdown(
+    """
+    <style>
+      body, .stApp { background-color: #F5F5F5 !important; }
+      .centered-card {
+          max-width: 400px;
+          margin: 80px auto 0 auto;
+          padding: 2.5rem 2.5rem 2rem 2.5rem;
+          background: #ffffffcc;
+          border-radius: 2rem;
+          box-shadow: 0 8px 32px rgba(30,136,229,0.11);
+      }
+      .login-title {
+          text-align: center;
+          margin-bottom: 0.5rem;
+          font-size: 2.1rem;
+          color: #1E88E5;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+      }
+      .login-desc {
+          text-align: center;
+          font-size: 1.04rem;
+          color: #333;
+          margin-bottom: 1.7rem;
+      }
+      .stTextInput>div>div>input {
+          font-size: 1.12rem;
+          padding: 0.6rem 0.9rem;
+          border-radius: 0.6rem;
+          border: 1.5px solid #90caf9;
+          background: #fafbfc;
+      }
+      .stButton>button {
+          background-color: #1E88E5 !important;
+          color: white !important;
+          border-radius: 0.7rem !important;
+          font-size: 1.09rem !important;
+          padding: 0.55rem 0.9rem !important;
+      }
+    </style>
+    """, unsafe_allow_html=True
+)
+
+def show_login():
+    st.markdown('<div class="centered-card">', unsafe_allow_html=True)
+    st.markdown('<div class="login-title">Welcome to Kind Kitchen</div>', unsafe_allow_html=True)
+    st.markdown('<div class="login-desc">Enter your password to start creating menus, recipes, and shopping lists.</div>', unsafe_allow_html=True)
+    # Password field is always visible
+    pwd = st.text_input("Password", type="password", key="pw_input", help="Password required to access the app")
+    login = st.button("Login")
+    st.markdown('</div>', unsafe_allow_html=True)
+    return pwd, login
+
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-if not st.session_state.get("authenticated", False):
-    with st.sidebar:
-        pwd = st.text_input("Enter password:", type="password")
-        submit = st.button("Submit", key="pwd_submit")
-
-    if submit:
+if not st.session_state.authenticated:
+    pwd, login = show_login()
+    if login:
         if pwd == st.secrets["app_password"]:
             st.session_state.authenticated = True
             st.rerun()
         else:
-            st.sidebar.error("Incorrect password")
-            st.stop()
-    elif not st.session_state.get("authenticated", False):
-        st.stop()
+            st.error("Incorrect password. Please try again.")
+    st.stop()
+
 
 # --- Page config & custom CSS ---
 st.set_page_config(
