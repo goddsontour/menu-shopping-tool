@@ -275,7 +275,7 @@ def display_recipe(title, ingredients, method):
     st.subheader(title)
     st.markdown('**Ingredients**')
     for item in ingredients:
-        st.markdown(f'- {item}')
+        st.text(item)  # Each ingredient as a plain line, no dashes, no bullets
     st.markdown('**Method**')
     for i, step in enumerate(method, 1):
         st.markdown(f'{i}. {step}')
@@ -317,9 +317,6 @@ def main():
         for txt in recipes:
             # ... process each recipe ...
             title, ingredients, method = parse_recipe(txt)
-            st.write("DEBUG: Title:", title)
-            st.write("DEBUG: Ingredients:", ingredients)
-            st.write("DEBUG: Method:", method)
 
             if not ingredients or not method:
                 st.warning(f"Skipping '{title}': missing sections.")
