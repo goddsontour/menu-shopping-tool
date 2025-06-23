@@ -1,34 +1,39 @@
-import streamlit as st
-
 def show_login():
     st.markdown("""
     <style>
     .welcome-circle {
-        width: 220px;
-        height: 220px;
+        width: 370px;
+        height: 370px;
         border-radius: 50%;
         background: white;
-        box-shadow: 0 4px 24px #bbb3;
+        box-shadow: 0 6px 48px #bbb4;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 30px auto;
+        margin: 0 auto 36px auto;
+        transition: all 0.2s;
     }
     .welcome-text {
-        color: #1565c0;
-        font-size: 1.25rem;
-        font-weight: 700;
+        color: #1976d2;
+        font-size: 2.1rem;
+        font-weight: 800;
         text-align: center;
         letter-spacing: 0.5px;
+        font-family: 'DejaVu Sans', Arial, sans-serif;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<br><br>", unsafe_allow_html=True)  # For extra top space
+    st.markdown("<br>", unsafe_allow_html=True)  # More top space if you want
 
-    col1, col2, col3 = st.columns([2, 2, 2])
+    col1, col2, col3 = st.columns([2, 3, 2])
     with col2:
-        st.markdown('<div class="welcome-circle"><div class="welcome-text">Welcome<br>to<br>Kind Kitchen</div></div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="welcome-circle">'
+            '<div class="welcome-text">'
+            'Welcome<br>to<br>Kind Kitchen'
+            '</div></div>', unsafe_allow_html=True
+        )
 
         pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
         login = st.button("Login", use_container_width=True)
