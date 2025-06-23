@@ -1,62 +1,44 @@
 import streamlit as st
+import re
+from fpdf import FPDF
+
+st.set_page_config(page_title="Login Test")
+
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
 
 def show_login():
-    if "authenticated" not in st.session_state:
-        st.session_state.authenticated = False
     st.markdown("""
     <style>
-    body, .stApp {
-        background-color: #f5f5f5;
-    }
-    .login-outer {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-    .welcome-circle {
-        width: 540px;
-        height: 540px;
-        border-radius: 50%;
-        background: white;
-        box-shadow: 0 6px 48px #bbb4;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 36px auto;
-    }
-    .welcome-text {
-        color: #1976d2;
-        font-size: 2.8rem;
-        font-weight: 800;
-        text-align: center;
-        letter-spacing: 0.5px;
-        font-family: 'DejaVu Sans', Arial, sans-serif;
-    }
-    .login-box {
-        width: 340px;
-        margin: 0 auto;
-    }
+        .welcome-circle {
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 6px 48px #bbb4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 80px auto 36px auto;
+        }
+        .welcome-text {
+            color: #1976d2;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+        }
+        .login-box {
+            width: 240px;
+            margin: 0 auto;
+        }
     </style>
     """, unsafe_allow_html=True)
-
-    st.markdown('<div class="login-outer">', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="welcome-circle">'
-        '<div class="welcome-text">'
-        'Welcome<br>to<br>Kind Kitchen'
-        '</div></div>',
-        unsafe_allow_html=True
-    )
-
+    st.markdown('<div class="welcome-circle"><div class="welcome-text">Welcome<br>to<br>Kind Kitchen</div></div>', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
-    login = st.button("Login", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)  # Close login-box
-
-    st.markdown('</div>', unsafe_allow_html=True)  # Close login-outer
-
+    login = st.button("Login")
+    st.markdown('</div>', unsafe_allow_html=True)
     if login:
         if pwd == st.secrets["app_password"]:
             st.session_state.authenticated = True
@@ -64,11 +46,13 @@ def show_login():
         else:
             st.error("Incorrect password. Please try again.")
 
-if "authenticated" not in st.session_state or not st.session_state.authenticated:
+if not st.session_state.authenticated:
     show_login()
     st.stop()
+else:
+    st.success("You're logged in! This is your app content.")
 
-# --------- FULL KEYWORDS DICTIONARY HERE! ---------
+    # --------- FULL KEYWORDS DICTIONARY HERE! ---------
 KEYWORDS = {
     'Meat': [
         'Rump steak', 'Scotch fillet', 'Porterhouse steak', 'T-bone steak', 'Beef mince', 'Diced beef',
