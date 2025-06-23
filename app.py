@@ -1,4 +1,12 @@
 import streamlit as st
+
+# 🔐 Password protection
+password = st.text_input("Enter password:", type="password")
+if password != st.secrets["app_password"]:
+    st.error("Incorrect password")
+    st.stop()
+
+# ✅ Only runs if password is correct
 import io
 import zipfile
 from fpdf import FPDF
