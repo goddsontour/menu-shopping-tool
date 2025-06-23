@@ -8,15 +8,19 @@ from fpdf import FPDF
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-if not st.session_state.authenticated:
-    pwd = st.sidebar.text_input("Enter password:", type="password")
-    if pwd == st.secrets["app_password"]:
-        st.session_state.authenticated = True
-        st.rerun()
-    elif pwd:
-        st.sidebar.error("Incorrect password")
-        st.stop()
-    else:
+if not st.session_state.get("authenticated", False):
+    with st.sidebar:
+        pwd = st.text_input("Enter password:", type="password")
+        submit = st.button("Submit", key="pwd_submit")
+
+    if submit:
+        if pwd == st.secrets["app_password"]:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.sidebar.error("Incorrect password")
+            st.stop()
+    elif not st.session_state.get("authenticated", False):
         st.stop()
 
 # --- Page config & custom CSS ---
