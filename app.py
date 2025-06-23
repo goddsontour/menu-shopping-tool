@@ -341,24 +341,20 @@ def main():
         all_pdfs = []
         all_ingredients = []
         for txt in recipes:
-            title, ingredients, method = parse_recipe(txt)
-            
-            if not ingredients or not method:
-                st.warning(f"Skipping '{title}': missing sections.")
-                continue
+    title, ingredients, method = parse_recipe(txt)
+    if not ingredients or not method:
+        st.warning(f"Skipping '{title}': missing sections.")
+        continue
 
-            display_recipe(title, ingredients, method)
-            cats = categorize_ingredients(ingredients)
-
-            # For PDF, keep per-recipe shopping list
-            pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
-            fn = f"{title.replace(' ', '_').lower()}.pdf"
-            all_pdfs.append((fn, pdf_bytes))
-            st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf')
-            st.markdown('---')
-
-            # Combine all ingredients for main shopping list
-            all_ingredients.extend(ingredients)
+    display_recipe(title, ingredients, method)
+    cats = categorize_ingredients(ingredients)
+    # For PDF, keep per-recipe shopping list
+    pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
+    fn = f"{title.replace(' ', '_').lower()}.pdf"
+    all_pdfs.append((fn, pdf_bytes))
+    st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf')
+    st.markdown('---')
+    all_ingredients.extend(ingredients)
 
         # ----->>  Combined Shopping List for All Recipes  <<-----
         combined_shopping = categorize_ingredients(all_ingredients)
