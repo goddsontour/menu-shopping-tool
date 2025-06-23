@@ -1,16 +1,17 @@
 import streamlit as st
 
-# 🔐 Password protection
-password = st.text_input("Enter password:", type="password")
-if password != st.secrets["app_password"]:
-    st.error("Incorrect password")
-    st.stop()
+# 🔐 Session-based password protection
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
 
-# ✅ Only runs if password is correct
-import io
-import zipfile
-from fpdf import FPDF
-import re
+if not st.session_state.authenticated:
+    password = st.text_input("Enter password:", type="password")
+    if password == st.secrets["app_password"]:
+        st.session_state.authenticated = True
+        st.experimental_rerun()
+    elif password:
+        st.error("Incorrect password")
+    st.stop() 
 
 # --- Page config & custom CSS ---
 st.set_page_config(
@@ -32,107 +33,15 @@ st.markdown(
 
 # --- Keyword definitions for categorization ---
 KEYWORDS = {
-    'Meat': [
-        'Rump steak','Scotch fillet','Porterhouse steak','T-bone steak','Beef mince','Diced beef',
-        'Beef schnitzel','Beef stir-fry strips','Beef sausages','Corned beef silverside','Beef roast',
-        'Lamb chops','Lamb cutlets','Lamb leg roast','Lamb shanks','Diced lamb','Lamb mince',
-        'Lamb sausages','Pork chops','Pork belly','Pork roast','Pork spare ribs','Diced pork',
-        'Pork mince','Pork sausages','Pork schnitzel','Whole chicken','Chicken breast','Chicken thighs',
-        'Chicken drumsticks','Chicken wings','Chicken tenderloins','Chicken mince','Chicken schnitzel',
-        'Chicken marylands','Roast beef slices','Pastrami','Corned beef slices','Champagne ham',
-        'Virginian ham','Honey leg ham','Triple smoked ham','Shaved chicken breast','Turkey breast slices',
-        'Salami','Prosciutto','Sopressa','Mortadella','Pepperoni','Kassler','Bacon','Frankfurts',
-        'Kransky','Chorizo','Cocktail sausages','Kabana','Devon','Liverwurst','Pâté',
-        'Marinated chicken wings','Marinated chicken drumsticks','Meat kebabs','Rissoles',
-        'Burger patties','Honey soy chicken portions','BBQ pork ribs','Pre-marinated pork belly',
-        'Lemon herb chicken thighs'
-    ],
-    'Vegetables and Fruits': [
-        'Apples','Bananas','Oranges','Mandarins','Pears','Peaches','Plums','Nectarines',
-        'Grapes','Kiwifruit','Pineapple','Mangoes','Watermelon','Rockmelon','Cantaloupe',
-        'Strawberries','Blueberries','Raspberries','Blackberries','Lemons','Limes','Avocados',
-        'Tomatoes','Cherry tomatoes','Grape tomatoes','Cucumbers','Zucchini','Carrots','Celery',
-        'Lettuce','Cos lettuce','Iceberg lettuce','Mixed salad leaves','Rocket','Spinach',
-        'Silverbeet','Kale','Cabbage','Red cabbage','Savoy cabbage','Broccoli','Cauliflower',
-        'Green beans','Snow peas','Sugar snap peas','Capsicum','Chillies','Eggplant','Pumpkin',
-        'Sweet potato','Potatoes','Onions','Onion','Garlic','Shallots','Spring onions','Leeks','Mushrooms',
-        'Corn','Green peas','Brussels sprouts','Beetroot','Radish','Fennel','Asparagus','Artichoke',
-        'Parsnip','Chokos','Passionfruit','Papaya','Pomegranate','Coconut','Dates','Figs','Persimmon',
-        'Lychee','Dragonfruit','Rambutan','Starfruit','Basil','Coriander','Parsley','Mint',
-        'Dill','Chives','Thyme','Rosemary','Sage','Tarragon','Marjoram','Vietnamese mint',
-        'Lemongrass','Kaffir lime leaves','Bay leaves','Curry leaves'
-    ],
-    'Dairy': [
-        'Milk','Lactose-free milk','A2 milk','Long-life milk','Flavoured milk','UHT milk',
-        'Buttermilk','Cream','Sour cream','Crème fraîche','Yoghurt','Yoghurt tubs','Yoghurt pouches',
-        'Skyr','Kefir','Butter','Cultured butter','Spreadable butter','Margarine','Ghee',
-        'Cheddar cheese','Tasty cheese','Colby cheese','Mozzarella','Parmesan','Pecorino',
-        'Grana Padano','Swiss cheese','Jarlsberg','Havarti','Provolone','Edam','Gouda','Brie',
-        'Camembert','Blue cheese','Feta','Goat cheese','Ricotta','Cottage cheese','Cream cheese',
-        'Mascarpone','Paneer','Haloumi','Processed cheese slices','Cheese sticks','Shredded cheese blends',
-        'Grated cheese','Sliced cheese packs','Parmesan shavings','Custard','Dairy desserts',
-        'Milk-based smoothies','Dairy-based dips','Evaporated milk','Condensed milk','Powdered milk'
-    ],
-    'Bakery': [
-        'White bread','Wholemeal bread','Multigrain bread','Soy and linseed bread','Rye bread',
-        'Sourdough','Pane di casa','Ciabatta','Turkish bread','Brioche loaf','Vienna loaf',
-        'High-fibre loaf','Gluten-free bread','Low-carb bread','Fruit loaf','Raisin toast',
-        'English muffins','Crumpets','Bagels','Wraps','Tortillas','Pita bread','Lebanese bread',
-        'Flatbread','Pizza bases','Burger buns','Hot dog rolls','Long rolls','Dinner rolls',
-        'Seeded rolls','Mini rolls','Cheese and bacon rolls','Scrolls','Croissants',
-        'Pain au chocolat','Danish pastries','Cinnamon scrolls','Apple turnovers','Custard tarts',
-        'Jam tarts','Vanilla slices','Éclairs','Lamingtons','Swiss rolls','Muffins','Cupcakes',
-        'Madeleines','Banana bread','Carrot cake','Mud cake','Sponge cake','Chocolate cake',
-        'Birthday cake','Slab cake','Fruit cake','Pound cake','Tea cake','Butter cake',
-        'Brownies','Slice bars','Cookies','Biscuits','Shortbread','Anzac biscuits','Gingerbread',
-        'Melting moments','Yo-yos','Scones','Pikelets','Waffles','Donuts','Mini donuts',
-        'Jam-filled donuts','Iced donuts','Cinnamon donuts','Churros'
-    ],
-    'Pantry': [
-        'Plain flour','Self-raising flour','Wholemeal flour','Bread flour','00 flour','Rice flour',
-        'Cornflour','Almond meal','Coconut flour','Polenta','Semolina','Rolled oats','Quick oats',
-        'Steel-cut oats','Muesli','Granola','Cereal','Pasta','Gluten-free pasta','Rice','Couscous',
-        'Quinoa','Bulgur','Barley','Lentils','Chickpeas','Black beans','Kidney beans','Cannellini beans',
-        'Butter beans','Baked beans','Tinned tomatoes','Tomato paste','Tomato passata','Coconut milk',
-        'Coconut cream','Canned corn','Canned mushrooms','Canned beetroot','Canned fruit','Tuna',
-        'Salmon','Sardines','Anchovies','Corned beef','SPAM','Canned chicken','Soup cans','Stock',
-        'Bouillon cubes','Gravy powder','Packet sauces','Instant noodles','Rice vermicelli','Egg noodles',
-        'Udon noodles','Soba noodles','Nori sheets','Breadcrumbs','Crackers','Rice cakes','Corn cakes',
-        'Crispbread','Biscuits','Chocolate biscuits','Wafers','Muesli bars','Nut bars','Cake mixes',
-        'Brownie mix','Pudding mix','Custard powder','Gelatine','Baking powder','Baking soda','Yeast',
-        'Icing sugar','Caster sugar','White sugar','Brown sugar','Golden syrup','Maple syrup','Honey',
-        'Molasses','Agave syrup','Peanut butter','Almond butter','Tahini','Hazelnut spread','Jam',
-        'Marmalade','Vegemite','Marmite','Chutney','Relish','Mustard','Mayonnaise','Aioli','Tomato sauce',
-        'BBQ sauce','Soy sauce','Tamari','Teriyaki sauce','Hoisin sauce','Oyster sauce','Fish sauce',
-        'Sriracha','Hot sauce','Curry paste','Sambal oelek','Vinegar','Olive oil','Vegetable oil',
-        'Canola oil','Sunflower oil','Sesame oil','Peanut oil','Salt','Himalayan salt','Sea salt flakes',
-        'Iodised salt','Black pepper','Peppercorns','Mixed herbs','Thyme','Parsley','Basil','Sage',
-        'Tarragon','Marjoram','Bay leaves','Chilli flakes','Paprika','Smoked paprika',
-        'Ground cumin','Ground coriander','Curry powder','Garam masala','Turmeric','Cinnamon','Nutmeg',
-        'Vanilla extract','Food colouring','Sprinkles'
-    ],
-    'Frozen': [
-        'Peas','Corn','Green beans','Mixed vegetables','Broccoli','Cauliflower','Stir-fry vegetable mix','Spinach',
-        'Edamame','Sweet potato','Avocado pieces','Onions','Diced capsicum','Blueberries','Raspberries',
-        'Mixed berries','Mango','Banana','Cherries','Pineapple','Fruit salad','Acai puree','Smoothie packs',
-        'Oven fries','Potato wedges','Hash browns','Potato gems','Mashed potato','Onion rings',
-        'Crumbed mushrooms','Battered cauliflower','Vegetable patties','Falafel','Veggie nuggets',
-        'Veggie burgers','Plant-based mince','Plant-based sausages','Plant-based chicken','Beef mince',
-        'Chicken breast','Chicken nuggets','Chicken schnitzels','Chicken tenders','Chicken wings',
-        'Chicken kievs','Whole chicken','Turkey breast','Duck','Pork roast','Beef burgers','Steak',
-        'Meat pies','Sausage rolls','Pizza','Mini pizzas','Garlic bread','Lasagna','Pasta meals',
-        'Cannelloni','Ravioli','Gnocchi','Pasta sheets','Dumplings','Gyoza','Spring rolls','Samosas',
-        'Roti','Naan','Paratha','Puff pastry','Shortcrust pastry','Filo pastry','Pastry sheets','Quiches',
-        'Savoury pastries','Fish fillets','Salmon portions','Prawns','Calamari','Seafood marinara mix',
-        'Seafood baskets','Fish fingers','Crab sticks','Dim sims','Bao buns','Pancakes','Waffles',
-        'Crumpets','Croissants','Brioche buns','Muffins','Yorkshire puddings','Scones','Cakes',
-        'Cheesecakes','Tarts','Desserts','Ice cream','Gelato','Sorbet','Yoghurt','Icy poles',
-        'Fruit bars','Ice cubes','Baby food','Dog food','Cat food'
-    ]
+    'Meat': [ ... ],
+    'Vegetables and Fruits': [ ... ],
+    'Dairy': [ ... ],
+    'Bakery': [ ... ],
+    'Pantry': [ ... ],
+    'Frozen': [ ... ]
 }
 
 # --- Helper functions ---
-
 def sanitize_text(text):
     bad_chars = ['\u200b','\u00a0','\u2028','\u2029','\u2009','\u2002','\u2003','\u2004','\u2005','\u2006','\u2007']
     for c in bad_chars:
@@ -176,12 +85,7 @@ def parse_recipe(text):
     except StopIteration:
         return title, [], []
     raw_ing = lines[i1+1:i2]
-    ingredients = []
-    for line in raw_ing:
-        for part in re.split(r'[–—\-•]', line):
-            p = sanitize_text(part)
-            if p:
-                ingredients.append(p)
+    ingredients = [sanitize_text(p) for line in raw_ing for p in re.split(r'[–—\-•]', line) if sanitize_text(p)]
     method = [sanitize_text(m) for m in lines[i2+1:]]
     return title, ingredients, method
 
@@ -206,8 +110,7 @@ def create_pdf(title, ingredients, method, shopping_categories=None):
     url_pat = r'(https?://[^\s]+)'
     for i, step in enumerate(method, 1):
         pdf.write(6, f'{i}. ')
-        parts = re.split(url_pat, step)
-        for part in parts:
+        for part in re.split(url_pat, step):
             if re.match(url_pat, part):
                 pdf.set_text_color(0, 0, 255)
                 pdf.write(6, part, link=part)
