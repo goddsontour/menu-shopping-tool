@@ -1,80 +1,85 @@
-# TEST LINE 12345
-import streamlit as st
-
-# --- Page config & custom CSS (login shares home bg) ---
-st.set_page_config(
-    page_title="Recipe & Shopping List Generator",
-    page_icon=":shallow_pan_of_food:",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-st.markdown(
-    """
-    <style>
-      body, .stApp { background-color: #F5F5F5 !important; }
-      .centered-card {
-          max-width: 400px;
-          margin: 80px auto 0 auto;
-          padding: 2.5rem 2.5rem 2rem 2.5rem;
-          background: #ffffffcc;
-          border-radius: 2rem;
-          box-shadow: 0 8px 32px rgba(30,136,229,0.11);
-      }
-      .login-title {
-          text-align: center;
-          margin-bottom: 0.5rem;
-          font-size: 2.1rem;
-          color: #1E88E5;
-          font-weight: 600;
-          letter-spacing: 0.5px;
-      }
-      .login-desc {
-          text-align: center;
-          font-size: 1.04rem;
-          color: #333;
-          margin-bottom: 1.7rem;
-      }
-      .stTextInput>div>div>input {
-          font-size: 1.12rem;
-          padding: 0.6rem 0.9rem;
-          border-radius: 0.6rem;
-          border: 1.5px solid #90caf9;
-          background: #fafbfc;
-      }
-      .stButton>button {
-          background-color: #1E88E5 !important;
-          color: white !important;
-          border-radius: 0.7rem !important;
-          font-size: 1.09rem !important;
-          padding: 0.55rem 0.9rem !important;
-      }
-    </style>
-    """, unsafe_allow_html=True
-)
-
-def show_login():
-    st.markdown('<div class="centered-card">', unsafe_allow_html=True)
-    st.markdown('<div class="login-title">Welcome to Kind Kitchen</div>', unsafe_allow_html=True)
-    st.markdown('<div class="login-desc">Enter your password to start creating menus, recipes, and shopping lists.</div>', unsafe_allow_html=True)
-    # Password field is always visible
-    pwd = st.text_input("Password", type="password", key="pw_input", help="Password required to access the app")
-    login = st.button("Login")
-    st.markdown('</div>', unsafe_allow_html=True)
-    return pwd, login
-
+# --- Password protection in sidebar ---
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 if not st.session_state.authenticated:
-    pwd, login = show_login()
-    if login:
+    # --- Custom CSS for a centered login page with white circle ---
+    st.markdown(
+        """
+        <style>
+        body { background: #F5F5F5 !important; }
+        .centered-login {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 75vh;
+        }
+        .circle {
+            background: #fff;
+            border-radius: 50%;
+            width: 340px;
+            height: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+        }
+        .welcome-text {
+            font-size: 2.0rem;
+            font-weight: 600;
+            color: #24596a;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .pw-bar input {
+            width: 180px !important;
+            margin: 0 auto !important;
+            font-size: 1.1rem !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    # --- Layout for the login page ---
+    st.markdown('<div class="centered-login">', unsafe_allow_html=True)
+    st.markdown('<div class="circle"><div class="welcome-text">Welcome to<br>Kind Kitchen</div></div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Place password input in the center, short bar
+    pwd = st.text_input(
+        "",  # No label
+        type="password",
+        key="pw",
+        placeholder="Enter password",
+        label_visibility="collapsed",
+        help=None
+    )
+
+    # Style the password bar shorter
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stTextInput"] input {
+            width: 180px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Custom submit button centered
+    if st.button("Enter", help="Submit password"):
         if pwd == st.secrets["app_password"]:
             st.session_state.authenticated = True
             st.rerun()
-        else:
-            st.error("Incorrect password. Please try again.")
+        elif pwd:
+            st.error("Incorrect password")
     st.stop()
-
 
 # --- Page config & custom CSS ---
 st.set_page_config(
