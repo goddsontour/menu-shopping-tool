@@ -1,6 +1,4 @@
 import streamlit as st
-import re
-from fpdf import FPDF
 
 st.set_page_config(
     page_title="Kind Kitchen",
@@ -17,46 +15,44 @@ def show_login():
     .stApp {
         background-color: #f5f5f5;
     }
+    .block-container {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
     .login-outer {
-        min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
     }
     .welcome-circle {
-        width: 440px;
-        height: 440px;
+        width: 280px;
+        height: 280px;
         border-radius: 50%;
         background: white;
-        box-shadow: 0 6px 48px #bbb4;
+        box-shadow: 0 4px 24px #bbb4;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 30px auto;
-        transition: all 0.2s;
+        margin-bottom: 1rem;
     }
     .welcome-text {
         color: #1976d2;
-        font-size: 2.6rem;
-        font-weight: 800;
+        font-size: 2rem;
+        font-weight: 700;
         text-align: center;
-        letter-spacing: 0.5px;
         font-family: 'DejaVu Sans', Arial, sans-serif;
+        line-height: 1.3;
     }
     .login-box {
-        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
     }
-    /* Make password input short and centered */
     .stTextInput input[type="password"] {
         width: 180px !important;
         font-size: 1.15rem !important;
         text-align: center;
-        margin: 0 auto;
         border-radius: 6px !important;
     }
     .stButton button {
@@ -65,51 +61,7 @@ def show_login():
         font-size: 1.1rem;
     }
     </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="login-outer">', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="welcome-circle">'
-        '<div class="welcome-text">'
-        'Welcome<br>to<br>Kind Kitchen'
-        '</div></div>',
-        unsafe_allow_html=True
-    )
-    st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    pwd = st.text_input("Password", type="password", key="pw", label_visibility="collapsed")
-    login = st.button("Login")
-    st.markdown('</div>', unsafe_allow_html=True)  # Close login-box
-    st.markdown('</div>', unsafe_allow_html=True)  # Close login-outer
-
-    if login:
-        if pwd == st.secrets["app_password"]:
-            st.session_state.authenticated = True
-            st.rerun()
-        else:
-            st.error("Incorrect password. Please try again.")
-
-# ---------- PROTECT ALL BELOW WITH THIS ----------
-if "authenticated" not in st.session_state or not st.session_state.authenticated:
-    show_login()
-    st.stop()
-# ---------- THE REST OF YOUR APP FOLLOWS BELOW ----------
-
-st.set_page_config(
-    page_title="Recipe & Shopping List Generator",
-    page_icon=":shallow_pan_of_food:",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-st.markdown(
-    """
-    <style>
-      .stApp { background-color: #F5F5F5; }
-      header, footer { background-color: #B3E5FC !important; }
-      .stDownloadButton>button { background-color: #1E88E5 !important; color: white !important; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
 # --------- FULL KEYWORDS DICTIONARY HERE! ---------
 KEYWORDS = {
