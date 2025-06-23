@@ -2,6 +2,11 @@ import streamlit as st
 import re
 from fpdf import FPDF
 
+st.set_page_config(
+    page_title="Kind Kitchen",
+    layout="wide",       # use "wide" to take advantage of full screen width
+    initial_sidebar_state="collapsed"
+
 def show_login():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
