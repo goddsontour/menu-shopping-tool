@@ -1,4 +1,3 @@
-```python
 import streamlit as st
 import re
 from fpdf import FPDF
@@ -207,10 +206,10 @@ KEYWORDS = {
         'Crumpets', 'Croissants', 'Brioche buns', 'Muffins', 'Yorkshire puddings', 'Scones', 'Cakes',
         'Cheesecakes', 'Tarts', 'Desserts', 'Ice cream', 'Gelato', 'Sorbet', 'Yoghurt', 'Icy poles',
         'Fruit bars', 'Ice cubes', 'Baby food', 'Dog food', 'Cat food'
-    ]
+    ],
 }
 # --------- END KEYWORDS ---------
-
+    
 def sanitize_text(text):
     bad_chars = ['\u200b','\u00a0','\u2028','\u2029','\u2009','\u2002','\u2003','\u2004','\u2005','\u2006','\u2007']
     for c in bad_chars:
@@ -337,4 +336,3 @@ def main():
 
 if __name__=='__main__':
     main()
-```
