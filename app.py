@@ -369,13 +369,11 @@ def main():
         display_shopping(combined_shopping)
         # --------------------------------------------------------
 
-
         # Zip download for all PDFs
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, 'w') as zf:
             for fn, data in all_pdfs:
                 zf.writestr(fn, data)
-        st.download_button('Download All PDFs', data=buf.getvalue(), file_name='recipes.zip', mime='application/zip')
 
 if __name__ == '__main__':
     main()
