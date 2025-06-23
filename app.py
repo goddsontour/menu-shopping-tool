@@ -293,7 +293,7 @@ def create_pdf(title, ingredients, method, shopping_categories=None):
             pdf.ln(2)
     return pdf.output(dest='S').encode('latin1')
 
-def display_recipe(title, ingredients, method, index):
+def display_recipe(title, ingredients, method):
     st.subheader(title)
     st.markdown('**Ingredients**')
     for item in ingredients:
@@ -341,12 +341,16 @@ def main():
         all_pdfs = []
         all_ingredients = []
         for txt in recipes:
-            title, ingredients, method = parse_recipe(txt)
-            if not ingredients or not method:
-                st.warning(f"Skipping '{title}': missing sections.")
-                continue
+    title, ingredients, method = parse_recipe(txt)
 
-            display_recipe(title, ingredients, method)
+    # DEBUG line - add here!
+    st.write("DEBUG:", title, type(title), ingredients, type(ingredients), method, type(method))
+
+    if not ingredients or not method:
+        st.warning(f"Skipping '{title}': missing sections.")
+        continue
+
+    display_recipe(title, ingredients, method)
             cats = categorize_ingredients(ingredients)
 
             # For PDF, keep per-recipe shopping list
