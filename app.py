@@ -269,7 +269,7 @@ def create_pdf(title, ingredients, method, shopping_categories=None):
                 pdf.cell(0, 6, '- none', ln=True)
             pdf.ln(2)
 
-    return pdf.output(dest='S')
+    return pdf.output(dest='S').encode('latin1')
 
 def display_recipe(title, ingredients, method):
     st.subheader(title)
