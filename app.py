@@ -341,16 +341,16 @@ def main():
         all_pdfs = []
         all_ingredients = []
         for txt in recipes:
-    title, ingredients, method = parse_recipe(txt)
+            title, ingredients, method = parse_recipe(txt)
 
-    # DEBUG line - add here!
-    st.write("DEBUG:", title, type(title), ingredients, type(ingredients), method, type(method))
+            # DEBUG line - add here!
+            st.write("DEBUG:", title, type(title), ingredients, type(ingredients), method, type(method))
 
-    if not ingredients or not method:
-        st.warning(f"Skipping '{title}': missing sections.")
-        continue
+            if not ingredients or not method:
+                st.warning(f"Skipping '{title}': missing sections.")
+                continue
 
-    display_recipe(title, ingredients, method)
+            display_recipe(title, ingredients, method)
             cats = categorize_ingredients(ingredients)
 
             # For PDF, keep per-recipe shopping list
@@ -368,6 +368,7 @@ def main():
         st.header("Combined Shopping List")
         display_shopping(combined_shopping)
         # --------------------------------------------------------
+
 
         # Zip download for all PDFs
         buf = io.BytesIO()
