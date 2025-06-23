@@ -325,7 +325,7 @@ def main():
             pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
             fn = f"{title.replace(' ', '_').lower()}.pdf"
             all_pdfs.append((fn, pdf_bytes))
-            st.download_button('Download PDF', data=bytes pdf_bytes, file_name=fn, mime='application/pdf')
+            st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf')
             st.markdown('---')
 
         buf = io.BytesIO()
