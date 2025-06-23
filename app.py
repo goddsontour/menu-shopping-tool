@@ -4,7 +4,7 @@ import zipfile
 import re
 from fpdf import FPDF
 
-# --- Sidebar Password Protection ---
+# --- Password protection in sidebar ---
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
@@ -12,18 +12,19 @@ if not st.session_state.authenticated:
     pwd = st.sidebar.text_input("Enter password:", type="password")
     if pwd == st.secrets["app_password"]:
         st.session_state.authenticated = True
-        st.experimental_rerun()
+        st.rerun()   # <--- NEW!
     elif pwd:
         st.sidebar.error("Incorrect password")
         st.stop()
     else:
         st.stop()
 
-# --- Page Config & CSS ---
+# --- Page config & custom CSS ---
 st.set_page_config(
     page_title="Recipe & Shopping List Generator",
     page_icon=":shallow_pan_of_food:",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 st.markdown(
     """
@@ -36,7 +37,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- Full Keyword Definitions ---
+# --- Full KEYWORDS dict ---
 KEYWORDS = {
     'Meat': [
         'Rump steak','Scotch fillet','Porterhouse steak','T-bone steak','Beef mince','Diced beef',
@@ -292,6 +293,7 @@ def display_shopping(categories):
 def main():
     st.title('Recipe & Shopping List Generator')
     recipes = []
+
     tabs = st.tabs([f'Recipe {i+1}' for i in range(4)])
     for i, tab in enumerate(tabs):
         with tab:
