@@ -295,7 +295,6 @@ def display_recipe(title, ingredients, method, index=0):
     st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf', key=f"pdfbtn{index}")
 
 def display_shopping(categories):
-    st.subheader('Combined Shopping List')
     for sec, items in categories.items():
         st.markdown(f'**{sec}**')
         if items:
