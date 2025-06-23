@@ -1,18 +1,25 @@
+```python
 import streamlit as st
 import re
 from fpdf import FPDF
 
 st.set_page_config(page_title="Login Test")
 
+# Initialize authentication flag
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 def show_login():
+    # Inject custom CSS
     st.markdown("""
     <style>
+    /* Page background */
     body, .stApp {
       background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
     }
+    /* Full-screen flex centering for login */
     .login-outer {
       min-height: 100vh;
       display: flex;
@@ -20,6 +27,7 @@ def show_login():
       align-items: center;
       justify-content: center;
     }
+    /* Big circle behind "Kind Kitchen" */
     .welcome-circle {
       width: 50vmin;
       height: 50vmin;
@@ -41,64 +49,55 @@ def show_login():
       letter-spacing: 0.5px;
       font-family: 'DejaVu Sans', Arial, sans-serif;
     }
-    /* Force password bar to half-width and center it */
-    div.login-box > div[data-testid="stTextInput"] input {
-    width: 50% !important;
-    min-width: 120px !important;
-    max-width: 180px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    display: block !important;
-}
-    
-    /* (Optional) keep username full-width */
+    /* Login box container */
+    .login-box {
+      width: 340px;
+      margin: 0 auto;
+    }
+    /* Username stays full-width */
     .login-box input[type="text"] {
       width: 100% !important;
     }
-
-    /* ← Insert these two blocks right here: */
-    /* shrink the immediate parent div that Streamlit wraps around the <input> */
-    .login-box div[data-testid="stTextInput"] > div {
+    /* Password field is half-width and centered */
+    .login-box div[data-testid="stTextInput"] > div > input[type="password"] {
       width: 50% !important;
-      margin: 0 auto !important;
-      box-sizing: border-box !important;
-    }
-    /* ensure the <input> fills that smaller container */
-    .login-box div[data-testid="stTextInput"] > div > input {
-      width: 100% !important;
-      display: block !important;
-    }
-    /* ← End insertion */
-
-    /* (Optional) override only the password if you still need it:
-    .login-box input[type="password"] {
-      width: 50% !important;
+      min-width: 0 !important;
       margin: 0 auto !important;
       display: block !important;
     }
-    */
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="welcome-circle"><div class="welcome-text">Kind Kitchen</div></div>', unsafe_allow_html=True)
+    # HTML structure for login
+    st.markdown('<div class="login-outer">', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="welcome-circle">'
+        '  <div class="welcome-text">Kind Kitchen</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
     login = st.button("Login")
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
+
+    # Authentication logic
     if login:
         if pwd == st.secrets["app_password"]:
             st.session_state.authenticated = True
-            st.rerun()
+            st.experimental_rerun()
         else:
             st.error("Incorrect password. Please try again.")
 
+# Show login if not authenticated
 if not st.session_state.authenticated:
     show_login()
     st.stop()
-else:
-    st.success("You're logged in! This is your app content.")
 
-    # --------- FULL KEYWORDS DICTIONARY HERE! ---------
+# Authenticated content
+st.success("You're logged in! This is your app content.")
+
+# --------- FULL KEYWORDS DICTIONARY HERE! ---------
 KEYWORDS = {
     'Meat': [
         'Rump steak', 'Scotch fillet', 'Porterhouse steak', 'T-bone steak', 'Beef mince', 'Diced beef',
@@ -176,30 +175,26 @@ KEYWORDS = {
         'Oyster sauce', 'Fish sauce', 'Sriracha', 'Hot sauce', 'Curry paste', 'Sambal oelek', 'Satay sauce',
         'Vinegar', 'Lemon juice', 'Lime juice', 'Olive oil', 'Vegetable oil', 'Canola oil', 'Sunflower oil',
         'Sesame oil', 'Peanut oil', 'Coconut oil', 'Ghee', 'Cooking spray', 'Salt', 'Sea salt flakes',
-        'Iodised salt', 'Himalayan salt', 'Black pepper', 'Peppercorns', 'Dried Bay leaves', 'Chilli flakes',
+        'Iodised salt', 'Himalayan salt', 'Black pepper', 'Peppercorns', 'Dried bay leaves', 'Chilli flakes',
         'Ground paprika', 'Smoked paprika', 'Ground cumin', 'Ground coriander', 'Curry powder', 'Garam masala',
         'Five spice', 'Turmeric', 'Cinnamon', 'Nutmeg', 'Allspice', 'Ground ginger', 'Cloves', 'Vanilla extract',
         'Vanilla essence', 'Almond essence', 'Food colouring', 'Sprinkles', 'Decorations', 'Cocoa powder',
         'Drinking chocolate', 'Hot chocolate mix', 'Instant coffee', 'Ground coffee', 'Coffee beans', 'Coffee pods',
         'Black tea bags', 'Green tea', 'Herbal tea', 'Chai tea', 'Iced tea', 'Cordials', 'Soft drink bottles',
-        'Tonic water', 'Mineral water', 'Sparkling water', 'Long-life juice', 'Cooking wine', 'Stock concentrate',
-        'Meal bases', 'Taco kits', 'Wraps', 'Tortillas', 'Bread', 'Pizza bases', 'Flatbread', 'Pappadums',
+        'Tonic water', 'Mineral water', 'Sparkling water', 'Long-life juice', 'Cooking wine', 'Stock concentrates',
+        'Meal bases', 'Taco kits', 'Wraps', 'Tortillas', 'Bread sticks', 'Pizza bases', 'Flatbread', 'Pappadums',
         'Pickles', 'Gherkins', 'Olives', 'Sun-dried tomatoes', 'Roasted red peppers', 'Antipasto mix', 'Capers',
         'Artichoke hearts', 'Jerky', 'Popcorn', 'Potato chips', 'Corn chips', 'Pretzels', 'Nuts', 'Trail mix',
         'Dried fruit', 'Desiccated coconut', 'Shredded coconut', 'Seeds', 'Protein powder', 'Electrolyte powder',
         'Multivitamins', 'Health bars', 'Baby formula', 'Baby food jars', 'Pet food', 'Alfoil', 'Cling wrap',
         'Baking paper', 'Ziplock bags', 'Lunch bags', 'Paper towels', 'Tissues', 'Toilet paper', 'Dishwashing liquid',
-        'Sponges', 'Cleaning sprays', 'Bin liners', 'Matches', 'Candles', 'Dried basil', 'Dried coriander',
-        'Dried parsley', 'Dried mint', 'Dried dill', 'Dried chives', 'Dried Thyme', 'Dried rosemary',
-        'Dried oregano', 'Dried sage', 'Dried tarragon', 'Dried marjoram', 'Dried herbes de Provence',
-        'Dried Italian herb mix', 'Dried mixed herbs', 'Dried bay leaves', 'Dried lemongrass', 'Dried fennel leaves',
-        'Dried fenugreek leaves'
+        'Sponges', 'Cleaning sprays', 'Bin liners', 'Matches', 'Candles'
     ],
     'Frozen': [
         'Peas', 'Corn', 'Green beans', 'Mixed vegetables', 'Broccoli', 'Cauliflower', 'Stir-fry vegetable mix', 'Spinach',
         'Edamame', 'Sweet potato', 'Avocado pieces', 'Onions', 'Diced capsicum', 'Blueberries', 'Raspberries',
         'Mixed berries', 'Mango', 'Banana', 'Cherries', 'Pineapple', 'Fruit salad', 'Acai puree', 'Smoothie packs',
-        'Oven fries', 'Potato wedges', 'Hash browns', 'Potato gems', 'Mashed potato', 'Onion rings',
+        'Oven fries', 'Potato wedges', 'Hash browns', 'Potato gems', 'Mash', 'Onion rings',
         'Crumbed mushrooms', 'Battered cauliflower', 'Vegetable patties', 'Falafel', 'Veggie nuggets',
         'Veggie burgers', 'Plant-based mince', 'Plant-based sausages', 'Plant-based chicken', 'Beef mince',
         'Chicken breast', 'Chicken nuggets', 'Chicken schnitzels', 'Chicken tenders', 'Chicken wings',
@@ -216,187 +211,130 @@ KEYWORDS = {
 }
 # --------- END KEYWORDS ---------
 
-
 def sanitize_text(text):
     bad_chars = ['\u200b','\u00a0','\u2028','\u2029','\u2009','\u2002','\u2003','\u2004','\u2005','\u2006','\u2007']
     for c in bad_chars:
         text = text.replace(c, ' ')
-    ligatures = {'ﬀ':'ff','ﬁ':'fi','ﬂ':'fl','ﬃ':'ffi','ﬄ':'ffl'}
+    ligatures = {'﻿':'ff','ﬁ':'fi','ﬂ':'fl'}
     for lig, rep in ligatures.items():
         text = text.replace(lig, rep)
     text = text.replace('–','-').replace('—','-')
     return ' '.join(text.split())
 
 def normalize(word):
-    # Makes matching more robust for veggies and more
     return re.sub(r'[^a-z0-9]', '', word.lower().strip())
 
 def categorize_ingredients(ingredients):
     categories = {sec: [] for sec in KEYWORDS}
-    # Pre-make normalized keyword sets
-    keyword_lookup = {}
+    lookup = {}
     for sec, items in KEYWORDS.items():
-        keyword_lookup[sec] = set()
-        for k in items:
-            nk = k.lower().strip()
-            keyword_lookup[sec].add(nk)
-            if k.endswith('s'):
-                keyword_lookup[sec].add(nk[:-1])  # carrot/carrots
-
+        ns = set([item.lower() for item in items])
+        lookup[sec] = ns | set([i[:-1] for i in ns if i.endswith('s')])
     for item in ingredients:
         clean = sanitize_text(item)
-        base = re.sub(r'^[\d/]+\s*', '', clean)
+        base = re.sub(r'^[\d/]+\s*', '', clean).lower()
         placed = False
-        for sec in KEYWORDS:
-            for k in keyword_lookup[sec]:
-                if f" {k} " in f" {base.lower()} ":
+        for sec, keys in lookup.items():
+            for k in keys:
+                if f" {k} " in f" {base} ":
                     categories[sec].append(item)
                     placed = True
                     break
-            if placed:
-                break
+            if placed: break
         if not placed:
             categories['Pantry'].append(item)
     return categories
 
 def parse_recipe(text):
     lines = [l.strip() for l in text.splitlines() if l.strip()]
-    if not lines:
-        return "Untitled", [], []
-    title = lines[0]
-    i1 = i2 = None
-    for idx, line in enumerate(lines):
-        low = line.lower().replace(' ', '')
-        if i1 is None and low.startswith("ingredients"):
-            i1 = idx
-        elif i1 is not None and low.startswith("method"):
-            i2 = idx
-            break
-    if i1 is None or i2 is None or i2 <= i1:
-        return title, [], []
-    raw_ing = lines[i1+1:i2]
-    ingredients = []
-    for line in raw_ing:
-        parts = re.split(r"[–—\-•]", line)
-        for part in parts:
-            clean = sanitize_text(part)
-            if clean:
-                ingredients.append(clean)
-    method = []
-    for step in lines[i2+1:]:
-        clean = sanitize_text(step)
-        if clean:
-            method.append(clean)
-    return title, ingredients, method
+    title = lines[0] if lines else 'Untitled'
+    i1 = next((i for i,l in enumerate(lines) if l.lower().startswith('ingredients')), None)
+    i2 = next((i for i,l in enumerate(lines) if l.lower().startswith('method')), None)
+    if i1 is None or i2 is None or i2<=i1: return title, [], []
+    ing = []
+    for l in lines[i1+1:i2]:
+        for part in re.split(r'[–—\-•]', l):
+            c = sanitize_text(part)
+            if c: ing.append(c)
+    meth = [sanitize_text(s) for s in lines[i2+1:]]
+    return title, ing, meth
 
 def create_pdf(title, ingredients, method, shopping_categories=None):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font('Arial', 'B', 12)
-    pdf.cell(0, 10, sanitize_text(title), ln=True)
+    pdf.set_font('Arial','B',12)
+    pdf.cell(0,10,sanitize_text(title),ln=True)
     pdf.ln(2)
-    pdf.set_font('Arial', 'B', 11)
-    pdf.cell(0, 8, 'Ingredients', ln=True)
-    pdf.set_font('Arial', '', 11)
-    for item in ingredients:
-        pdf.cell(0, 6, f"{item}", ln=True)
+    pdf.set_font('Arial','B',11); pdf.cell(0,8,'Ingredients',ln=True)
+    pdf.set_font('Arial','',11)
+    for it in ingredients: pdf.cell(0,6,it,ln=True)
     pdf.ln(4)
-    pdf.set_font('Arial', 'B', 11)
-    pdf.cell(0, 8, 'Method', ln=True)
-    pdf.set_font('Arial', '', 11)
-    url_pat = r'(https?://[^\s]+)'
-    for i, step in enumerate(method, 1):
-        clean_step = re.sub(r'^\d+\.\s*', '', step)
-        pdf.write(6, f"{i}. {clean_step}")
+    pdf.set_font('Arial','B',11); pdf.cell(0,8,'Method',ln=True)
+    pdf.set_font('Arial','',11)
+    for i,step in enumerate(method,1):
+        stp = re.sub(r'^\d+\.\s*','',step)
+        pdf.write(6,f"{i}. {stp}")
         pdf.ln(8)
-    pdf.ln(4)
-    urls = []
-    for step in method:
-        for u in re.findall(url_pat, step):
-            if u not in urls:
-                urls.append(u)
+    urls = re.findall(r'https?://[^\s]+', ' '.join(method))
     if urls:
-        pdf.set_font('Arial', 'B', 11)
-        pdf.cell(0, 8, 'Links', ln=True)
-        pdf.set_font('Arial', '', 11)
-        for u in urls:
-            pdf.set_text_color(0, 0, 255)
-            pdf.write(6, u, link=u)
-            pdf.ln(6)
-        pdf.set_text_color(0, 0, 0)
         pdf.ln(4)
+        pdf.set_font('Arial','B',11); pdf.cell(0,8,'Links',ln=True)
+        pdf.set_font('Arial','',11)
+        for u in set(urls): pdf.write(6,u,link=u); pdf.ln(6)
     pdf.add_page()
     if shopping_categories:
-        pdf.set_font('Arial', 'B', 11)
-        pdf.cell(0, 8, 'Shopping List', ln=True)
-        pdf.set_font('Arial', '', 11)
+        pdf.set_font('Arial','B',11); pdf.cell(0,8,'Shopping List',ln=True)
+        pdf.set_font('Arial','',11)
         for sec, items in shopping_categories.items():
-            pdf.set_font('Arial', 'B', 11)
-            pdf.cell(0, 6, sec, ln=True)
-            pdf.set_font('Arial', '', 11)
+            pdf.set_font('Arial','B',11); pdf.cell(0,6,sec,ln=True)
+            pdf.set_font('Arial','',11)
             if items:
-                for it in items:
-                    pdf.cell(0, 6, f'- {it}', ln=True)
-            else:
-                pdf.cell(0, 6, '- none', ln=True)
+                for it in items: pdf.cell(0,6,f'- {it}',ln=True)
+            else: pdf.cell(0,6,'- none',ln=True)
             pdf.ln(2)
     return pdf.output(dest='S').encode('latin1')
 
 def display_recipe(title, ingredients, method, index=0):
     st.subheader(title)
     st.markdown('**Ingredients**')
-    for item in ingredients:
-        st.markdown(f"{item}")
+    for it in ingredients: st.markdown(it)
     st.markdown('**Method**')
-    for i, step in enumerate(method, 1):
-        clean_step = re.sub(r'^\s*\d+\s*[\.\)]?\s*', '', step)
-        st.markdown(f"{i}. {clean_step}")
-    # Individual PDF button
+    for i,step in enumerate(method,1): st.markdown(f"{i}. {re.sub(r'^\s*\d+[\.)]?\s*','',step)}")
     cats = categorize_ingredients(ingredients)
-    pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
-    fn = f"{title.replace(' ', '_').lower()}.pdf"
-    st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf', key=f"pdfbtn{index}")
+    pdf_data = create_pdf(title, ingredients, method, cats)
+    fn=f"{title.replace(' ','_').lower()}.pdf"
+    st.download_button('Download PDF', data=pdf_data, file_name=fn, mime='application/pdf', key=f"pdf{index}")
 
 def display_shopping(categories):
+    st.header('Shopping List')
     for sec, items in categories.items():
         st.markdown(f'**{sec}**')
         if items:
-            for it in items:
-                st.markdown(f'- {it}')
+            for it in items: st.markdown(f'- {it}')
         else:
             st.markdown('- none')
 
 def main():
-    if "authenticated" not in st.session_state or not st.session_state.authenticated:
-        show_login()
-        st.stop()
     st.title('Recipe & Shopping List Generator')
-    recipes = []
-    tabs = st.tabs([f'Recipe {i+1}' for i in range(4)])
-    for i, tab in enumerate(tabs):
+    recipes=[]
+    tabs=st.tabs([f'Recipe {i+1}' for i in range(4)])
+    for i,tab in enumerate(tabs):
         with tab:
-            txt = st.text_area(f'Paste Recipe #{i+1}', key=f'r{i}', height=150)
-            if txt.strip():
-                recipes.append(txt)
-    uploaded = st.file_uploader('Or upload up to 4 .txt files', type='txt', accept_multiple_files=True)
-    if uploaded:
-        for f in uploaded[:4]:
-            recipes.append(f.read().decode('utf-8'))
+            txt=st.text_area(f'Paste Recipe #{i+1}',key=f'r{i}',height=150)
+            if txt.strip(): recipes.append(txt)
+    files=st.file_uploader('Or upload up to 4 .txt files',type='txt',accept_multiple_files=True)
+    if files:
+        for f in files[:4]: recipes.append(f.read().decode())
     if st.button('Generate Recipe'):
-        if not recipes:
-            st.info('Enter at least one recipe or upload files.')
-            return
-        all_ingredients = []
-        for idx, txt in enumerate(recipes):
-            title, ingredients, method = parse_recipe(txt)
-            if not ingredients or not method:
-                st.warning(f"Skipping '{title}': missing sections.")
-                continue
-            display_recipe(title, ingredients, method, index=idx)
-            all_ingredients.extend(ingredients)
-        combined_shopping = categorize_ingredients(all_ingredients)
-        st.header("Shopping List")
-        display_shopping(combined_shopping)
+        if not recipes: st.info('Enter at least one recipe or upload files.'); return
+        all_ing=[]
+        for idx,txt in enumerate(recipes):
+            title,ing,meth=parse_recipe(txt)
+            if not ing or not meth: st.warning(f"Skipping '{title}': missing sections."); continue
+            display_recipe(title,ing,meth,index=idx)
+            all_ing.extend(ing)
+        display_shopping(categorize_ingredients(all_ing))
 
-if __name__ == '__main__':
+if __name__=='__main__':
     main()
+```
