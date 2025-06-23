@@ -188,9 +188,12 @@ def categorize_ingredients(ingredients):
         base = re.sub(r'^[\d/]+\s*', '', clean)
         words = normalize(base)
         placed = False
+        # Make a list of normalized words in the ingredient
+        ingredient_words = [normalize(w) for w in base.split()]
         for sec in KEYWORDS:
             for k in keyword_lookup[sec]:
-                if k and (words.startswith(k) or k in words):
+                # Match as first word or whole word in the string
+                if re.match(rf'^{k}\b', base.lower()) or re.search(rf'\b{k}\b', base.lower()):
                     categories[sec].append(item)
                     placed = True
                     break
