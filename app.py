@@ -1,3 +1,5 @@
+import streamlit as st
+
 def show_login():
     st.markdown("""
     <style>
@@ -24,7 +26,7 @@ def show_login():
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)  # More top space if you want
+    st.markdown("<br>", unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([2, 3, 2])
     with col2:
@@ -45,13 +47,11 @@ def show_login():
             else:
                 st.error("Incorrect password. Please try again.")
 
-# --- Use login logic at the top ---
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
-if not st.session_state.authenticated:
+# ---------- PROTECT ALL BELOW WITH THIS ----------
+if "authenticated" not in st.session_state or not st.session_state.authenticated:
     show_login()
     st.stop()
+# ---------- THE REST OF YOUR APP FOLLOWS BELOW ----------
 
 # --- Page config & custom CSS ---
 st.set_page_config(
