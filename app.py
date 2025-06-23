@@ -314,11 +314,9 @@ def main():
         all_pdfs = []
         for txt in recipes:
     title, ingredients, method = parse_recipe(txt)
-    # ⬇️ ADD THIS RIGHT HERE ⬇️
     st.write("DEBUG: Title:", title)
     st.write("DEBUG: Ingredients:", ingredients)
     st.write("DEBUG: Method:", method)
-    # ⬆️ ADD THIS RIGHT HERE ⬆️
 
     if not ingredients or not method:
         st.warning(f"Skipping '{title}': missing sections.")
