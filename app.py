@@ -311,6 +311,33 @@ def main():
             st.info('Enter at least one recipe or upload files.')
             return
 
+        all_pdfs = []
+        for txt in recipes:
+            title, ingredients, method = parse_recipe(txt)
+            st.write("DEBUG: Title:", title)
+            st.write("DEBUG: Ingredients:", ingredients)
+            st.write("DEBUG: Method:", method)
+
+            if not ingredients or not method:
+                st.warning(f"Skipping '{title}': missing sections.")
+                continue
+
+            display_recipe(title, ingredients, method)
+            cats = categorize_ingredients(ingredients)
+            display_shopping(cats)
+
+            pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
+            fn = f"{title.replace(' ', '_').lower()}.pdf"
+            all_pdfs.append((fn, pdf_bytes))
+            st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf')
+            st.markdown('---')
+
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, 'w') as zf:
+            for fn, data in all_pdfs:
+                zf.writestr(fn, data)
+        st.download_button('Download All PDFs', data=buf.getvalue(), file_name='recipes.zip', mime='application/zip')
+
     all_pdfs = []
 for txt in recipes:
     title, ingredients, method = parse_recipe(txt)
