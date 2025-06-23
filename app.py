@@ -12,7 +12,7 @@ if not st.session_state.authenticated:
     pwd = st.sidebar.text_input("Enter password:", type="password")
     if pwd == st.secrets["app_password"]:
         st.session_state.authenticated = True
-        st.experimental_rerun()
+        st.rerun()
     elif pwd:
         st.sidebar.error("Incorrect password")
         st.stop()
