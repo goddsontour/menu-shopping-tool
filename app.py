@@ -1,3 +1,5 @@
+import streamlit as st
+
 # --- Password protection in sidebar ---
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
