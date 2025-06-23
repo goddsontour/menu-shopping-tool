@@ -1,11 +1,19 @@
-import streamlit as st
-
 def show_login():
     st.markdown("""
     <style>
+    body, .stApp {
+        background-color: #f5f5f5;
+    }
+    .login-outer {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
     .welcome-circle {
-        width: 370px;
-        height: 370px;
+        width: 480px;
+        height: 480px;
         border-radius: 50%;
         background: white;
         box-shadow: 0 6px 48px #bbb4;
@@ -17,35 +25,41 @@ def show_login():
     }
     .welcome-text {
         color: #1976d2;
-        font-size: 2.1rem;
+        font-size: 2.4rem;
         font-weight: 800;
         text-align: center;
         letter-spacing: 0.5px;
         font-family: 'DejaVu Sans', Arial, sans-serif;
     }
+    .login-box {
+        width: 340px;
+        margin: 0 auto;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<div class="login-outer">', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="welcome-circle">'
+        '<div class="welcome-text">'
+        'Welcome<br>to<br>Kind Kitchen'
+        '</div></div>',
+        unsafe_allow_html=True
+    )
 
-    col1, col2, col3 = st.columns([2, 3, 2])
-    with col2:
-        st.markdown(
-            '<div class="welcome-circle">'
-            '<div class="welcome-text">'
-            'Welcome<br>to<br>Kind Kitchen'
-            '</div></div>', unsafe_allow_html=True
-        )
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
+    pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
+    login = st.button("Login", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)  # Close login-box
 
-        pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
-        login = st.button("Login", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)  # Close login-outer
 
-        if login:
-            if pwd == st.secrets["app_password"]:
-                st.session_state.authenticated = True
-                st.experimental_rerun()
-            else:
-                st.error("Incorrect password. Please try again.")
+    if login:
+        if pwd == st.secrets["app_password"]:
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("Incorrect password. Please try again.")
 
 # ---------- PROTECT ALL BELOW WITH THIS ----------
 if "authenticated" not in st.session_state or not st.session_state.authenticated:
