@@ -1,3 +1,6 @@
+Last save of code:
+
+
 import streamlit as st
 import io
 import zipfile
@@ -294,6 +297,7 @@ def main():
     st.title('Recipe & Shopping List Generator')
     recipes = []
 
+    # Collect recipes via text areas or uploads
     tabs = st.tabs([f'Recipe {i+1}' for i in range(4)])
     for i, tab in enumerate(tabs):
         with tab:
@@ -306,6 +310,7 @@ def main():
         for f in uploaded[:4]:
             recipes.append(f.read().decode('utf-8'))
 
+    # PROCESS only if button pressed
     if st.button('Generate Recipe'):
         if not recipes:
             st.info('Enter at least one recipe or upload files.')
@@ -313,6 +318,7 @@ def main():
 
         all_pdfs = []
         for txt in recipes:
+            # ... process each recipe ...
             title, ingredients, method = parse_recipe(txt)
             st.write("DEBUG: Title:", title)
             st.write("DEBUG: Ingredients:", ingredients)
