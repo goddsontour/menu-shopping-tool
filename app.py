@@ -329,7 +329,7 @@ def main():
             display_recipe(title, ingredients, method, index=idx)
             all_ingredients.extend(ingredients)
         combined_shopping = categorize_ingredients(all_ingredients)
-        st.header("Combined Shopping List")
+        st.header("Shopping List")
         display_shopping(combined_shopping)
 
 if __name__ == '__main__':
