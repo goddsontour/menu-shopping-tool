@@ -300,6 +300,7 @@ def display_recipe(title, ingredients, method):
         st.markdown(f"{item}")
     st.markdown('**Method**')
     for i, step in enumerate(method, 1):
+        # Remove leading numbers, periods, spaces (like "1. " or "1) " or "1 ")
         clean_step = re.sub(r'^\s*\d+\s*[\.\)]?\s*', '', step)
         st.markdown(f"{i}. {clean_step}")
 
