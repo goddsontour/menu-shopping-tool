@@ -332,27 +332,45 @@ def main():
     if uploaded:
         for f in uploaded[:4]:
             recipes.append(f.read().decode('utf-8'))
-    if st.button('Generate Shopping List & Show Recipes'):
+
+    if st.button('Generate Recipe'):
         if not recipes:
             st.info('Enter at least one recipe or upload files.')
             return
+
+        all_pdfs = []
         all_ingredients = []
-        parsed_recipes = []
         for txt in recipes:
             title, ingredients, method = parse_recipe(txt)
             if not ingredients or not method:
                 st.warning(f"Skipping '{title}': missing sections.")
                 continue
-            parsed_recipes.append((title, ingredients, method))
-            all_ingredients.extend(ingredients)
-        # --- Combined Shopping List ---
-        if all_ingredients:
-            combined_cats = categorize_ingredients(all_ingredients)
-            display_shopping(combined_cats)
-        # --- Each recipe on own tab, each with its own PDF button ---
-        for idx, (title, ingredients, method) in enumerate(parsed_recipes):
+
+            display_recipe(title, ingredients, method)
+            cats = categorize_ingredients(ingredients)
+
+            # For PDF, keep per-recipe shopping list
+            pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
+            fn = f"{title.replace(' ', '_').lower()}.pdf"
+            all_pdfs.append((fn, pdf_bytes))
+            st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf')
             st.markdown('---')
-            display_recipe(title, ingredients, method, idx)
+
+            # Combine all ingredients for main shopping list
+            all_ingredients.extend(ingredients)
+
+        # ----->>  Combined Shopping List for All Recipes  <<-----
+        combined_shopping = categorize_ingredients(all_ingredients)
+        st.header("Combined Shopping List")
+        display_shopping(combined_shopping)
+        # --------------------------------------------------------
+
+        # Zip download for all PDFs
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, 'w') as zf:
+            for fn, data in all_pdfs:
+                zf.writestr(fn, data)
+        st.download_button('Download All PDFs', data=buf.getvalue(), file_name='recipes.zip', mime='application/zip')
 
 if __name__ == '__main__':
     main()
