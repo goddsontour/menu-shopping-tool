@@ -5,6 +5,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+st.write("🔒 Login screen loaded")
 def show_login():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
@@ -20,10 +21,8 @@ def show_login():
         padding-bottom: 0.5rem;
     }
     .login-outer {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        text-align: center;
+        margin-top: 40px;
     }
     .welcome-circle {
         width: 280px;
