@@ -179,7 +179,7 @@ def parse_recipe(text):
     title = lines[0]
     i1 = i2 = None
     for idx, line in enumerate(lines):
-        low = line.lower()
+        low = line.lower().replace(' ', '')
         if i1 is None and low.startswith("ingredients"):
             i1 = idx
         elif i1 is not None and low.startswith("method"):
@@ -313,10 +313,16 @@ def main():
 
         all_pdfs = []
         for txt in recipes:
-            title, ingredients, method = parse_recipe(txt)
-            if not ingredients or not method:
-                st.warning(f"Skipping '{title}': missing sections.")
-                continue
+    title, ingredients, method = parse_recipe(txt)
+    # ⬇️ ADD THIS RIGHT HERE ⬇️
+    st.write("DEBUG: Title:", title)
+    st.write("DEBUG: Ingredients:", ingredients)
+    st.write("DEBUG: Method:", method)
+    # ⬆️ ADD THIS RIGHT HERE ⬆️
+
+    if not ingredients or not method:
+        st.warning(f"Skipping '{title}': missing sections.")
+        continue
 
             display_recipe(title, ingredients, method)
             cats = categorize_ingredients(ingredients)
