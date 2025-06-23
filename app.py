@@ -4,9 +4,9 @@ from fpdf import FPDF
 
 st.set_page_config(
     page_title="Kind Kitchen",
-    layout="wide",       # use "wide" to take advantage of full screen width
+    layout="wide",
     initial_sidebar_state="collapsed"
-
+)
 def show_login():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
