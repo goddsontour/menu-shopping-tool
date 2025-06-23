@@ -176,24 +176,23 @@ def normalize(word):
 
 def categorize_ingredients(ingredients):
     categories = {sec: [] for sec in KEYWORDS}
+    # Pre-make normalized keyword sets
     keyword_lookup = {}
     for sec, items in KEYWORDS.items():
         keyword_lookup[sec] = set()
         for k in items:
-            keyword_lookup[sec].add(normalize(k))
+            nk = k.lower().strip()
+            keyword_lookup[sec].add(nk)
             if k.endswith('s'):
-                keyword_lookup[sec].add(normalize(k[:-1]))
+                keyword_lookup[sec].add(nk[:-1])  # carrot/carrots
+
     for item in ingredients:
         clean = sanitize_text(item)
         base = re.sub(r'^[\d/]+\s*', '', clean)
-        words = normalize(base)
         placed = False
-        # Make a list of normalized words in the ingredient
-        ingredient_words = [normalize(w) for w in base.split()]
         for sec in KEYWORDS:
             for k in keyword_lookup[sec]:
-                # Match as first word or whole word in the string
-                if re.match(rf'^{k}\b', base.lower()) or re.search(rf'\b{k}\b', base.lower()):
+                if f" {k} " in f" {base.lower()} ":
                     categories[sec].append(item)
                     placed = True
                     break
