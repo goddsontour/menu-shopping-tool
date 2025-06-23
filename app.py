@@ -1,92 +1,44 @@
 import streamlit as st
-import io
-import zipfile
-import re
-from fpdf import FPDF
 
 def show_login():
-    # CSS for full centering and styling
     st.markdown("""
     <style>
-    html, body, [data-testid="stAppViewContainer"] {
-        height: 100%;
-        background-color: #F5F5F5 !important;
-    }
-    .kk-outer {
-        height: 98vh;
-        width: 100vw;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-    .kk-circle {
-        width: 180px; height: 180px;
+    .welcome-circle {
+        width: 220px;
+        height: 220px;
         border-radius: 50%;
         background: white;
+        box-shadow: 0 4px 24px #bbb3;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 20px #bbb2;
-        margin-bottom: 26px;
+        margin: 0 auto 30px auto;
     }
-    .kk-welcome {
+    .welcome-text {
         color: #1565c0;
-        font-size: 1.3rem;
-        font-weight: 600;
+        font-size: 1.25rem;
+        font-weight: 700;
         text-align: center;
-        line-height: 1.2;
         letter-spacing: 0.5px;
     }
-    .kk-passbox {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .kk-passbox input {
-        width: 170px !important;
-        height: 32px !important;
-        font-size: 1.07rem;
-        margin-top: 4px;
-        text-align: center;
-    }
-    .stTextInput {
-        width: 170px !important;
-    }
     </style>
-    <div class="kk-outer">
-      <div class="kk-circle">
-        <div class="kk-welcome">Welcome<br>to<br>Kind Kitchen</div>
-      </div>
-      <div class="kk-passbox">
-        <form>
-          <div>
-            <!-- Streamlit will put the input here -->
-          </div>
-        </form>
-      </div>
-    </div>
     """, unsafe_allow_html=True)
 
-    # Place the password field "inside" the container visually
-    st.markdown("<div style='display:flex;justify-content:center'>", unsafe_allow_html=True)
-    pwd = st.text_input("", type="password", key="pw", help="Enter your Kind Kitchen password here", label_visibility="collapsed")
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<br><br>", unsafe_allow_html=True)  # For extra top space
 
-    # Centered login button
-    col1, col2, col3 = st.columns([2, 1, 2])
+    col1, col2, col3 = st.columns([2, 2, 2])
     with col2:
-        if st.button("Login", use_container_width=True):
+        st.markdown('<div class="welcome-circle"><div class="welcome-text">Welcome<br>to<br>Kind Kitchen</div></div>', unsafe_allow_html=True)
+
+        pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
+        login = st.button("Login", use_container_width=True)
+
+        if login:
             if pwd == st.secrets["app_password"]:
                 st.session_state.authenticated = True
                 st.experimental_rerun()
             else:
-                st.session_state["auth_error"] = True
-
-    # Show error if wrong password
-    if st.session_state.get("auth_error", False):
-        st.error("Incorrect password. Please try again.")
-        st.session_state["auth_error"] = False
+                st.error("Incorrect password. Please try again.")
 
 # --- Use login logic at the top ---
 if "authenticated" not in st.session_state:
