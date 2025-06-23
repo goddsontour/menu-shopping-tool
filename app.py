@@ -311,8 +311,8 @@ def main():
             st.info('Enter at least one recipe or upload files.')
             return
 
-        all_pdfs = []
-        for txt in recipes:
+    all_pdfs = []
+for txt in recipes:
     title, ingredients, method = parse_recipe(txt)
     st.write("DEBUG: Title:", title)
     st.write("DEBUG: Ingredients:", ingredients)
