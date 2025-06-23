@@ -1,11 +1,15 @@
 import streamlit as st
+import re
+from fpdf import FPDF
 
 def show_login():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
+
+    # Custom CSS for background, circle, centering, and short password box
     st.markdown("""
     <style>
-    body, .stApp {
+    .stApp {
         background-color: #f5f5f5;
     }
     .login-outer {
@@ -16,28 +20,44 @@ def show_login():
         justify-content: center;
     }
     .welcome-circle {
-        width: 480px;
-        height: 480px;
+        width: 440px;
+        height: 440px;
         border-radius: 50%;
         background: white;
         box-shadow: 0 6px 48px #bbb4;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 36px auto;
+        margin: 0 auto 30px auto;
         transition: all 0.2s;
     }
     .welcome-text {
         color: #1976d2;
-        font-size: 2.4rem;
+        font-size: 2.6rem;
         font-weight: 800;
         text-align: center;
         letter-spacing: 0.5px;
         font-family: 'DejaVu Sans', Arial, sans-serif;
     }
     .login-box {
-        width: 340px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    /* Make password input short and centered */
+    .stTextInput input[type="password"] {
+        width: 180px !important;
+        font-size: 1.15rem !important;
+        text-align: center;
         margin: 0 auto;
+        border-radius: 6px !important;
+    }
+    .stButton button {
+        width: 180px !important;
+        margin-top: 8px;
+        font-size: 1.1rem;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -50,12 +70,10 @@ def show_login():
         '</div></div>',
         unsafe_allow_html=True
     )
-
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
-    login = st.button("Login", use_container_width=True)
+    pwd = st.text_input("Password", type="password", key="pw", label_visibility="collapsed")
+    login = st.button("Login")
     st.markdown('</div>', unsafe_allow_html=True)  # Close login-box
-
     st.markdown('</div>', unsafe_allow_html=True)  # Close login-outer
 
     if login:
@@ -71,7 +89,6 @@ if "authenticated" not in st.session_state or not st.session_state.authenticated
     st.stop()
 # ---------- THE REST OF YOUR APP FOLLOWS BELOW ----------
 
-# --- Page config & custom CSS ---
 st.set_page_config(
     page_title="Recipe & Shopping List Generator",
     page_icon=":shallow_pan_of_food:",
