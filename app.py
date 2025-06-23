@@ -1,4 +1,8 @@
+import streamlit as st
+
 def show_login():
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
     st.markdown("""
     <style>
     body, .stApp {
@@ -354,6 +358,9 @@ def display_shopping(categories):
             st.markdown('- none')
 
 def main():
+    if "authenticated" not in st.session_state or not st.session_state.authenticated:
+        show_login()
+        st.stop()
     st.title('Recipe & Shopping List Generator')
     recipes = []
     tabs = st.tabs([f'Recipe {i+1}' for i in range(4)])
