@@ -8,10 +8,10 @@ if not st.session_state.authenticated:
     password = st.text_input("Enter password:", type="password")
     if password == st.secrets["app_password"]:
         st.session_state.authenticated = True
-        st.experimental_rerun()
+        st.rerun()  # ✅ Updated for latest Streamlit
     elif password:
         st.error("Incorrect password")
-    st.stop() 
+    st.stop()
 
 # --- Page config & custom CSS ---
 st.set_page_config(
