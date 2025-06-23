@@ -10,31 +10,77 @@ if "authenticated" not in st.session_state:
 def show_login():
     st.markdown("""
     <style>
-        .welcome-circle {
-            width: 360px;
-            height: 360px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 6px 48px #bbb4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 80px auto 36px auto;
-        }
-        .welcome-text {
-            color: #1976d2;
-            font-size: 2.2rem;
-            font-weight: 700;
-            text-align: center;
-            font-family: 'DejaVu Sans', Arial, sans-serif;
-        }
-        .login-box {
-            width: 240px;
-            margin: 0 auto;
-        }
+    body, .stApp {
+      background-color: #f5f5f5;
+    }
+    .login-outer {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .welcome-circle {
+      width: 50vmin;
+      height: 50vmin;
+      max-width: 90vh;
+      max-height: 90vh;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 6px 48px #bbb4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 36px auto;
+    }
+    .welcome-text {
+      color: #009000;
+      font-size: 2.8rem;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: 0.5px;
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+    }
+    /* Force password bar to half-width and center it */
+    div.login-box > div[data-testid="stTextInput"] input {
+    width: 50% !important;
+    min-width: 120px !important;
+    max-width: 180px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+}
+    
+    /* (Optional) keep username full-width */
+    .login-box input[type="text"] {
+      width: 100% !important;
+    }
+
+    /* ← Insert these two blocks right here: */
+    /* shrink the immediate parent div that Streamlit wraps around the <input> */
+    .login-box div[data-testid="stTextInput"] > div {
+      width: 50% !important;
+      margin: 0 auto !important;
+      box-sizing: border-box !important;
+    }
+    /* ensure the <input> fills that smaller container */
+    .login-box div[data-testid="stTextInput"] > div > input {
+      width: 100% !important;
+      display: block !important;
+    }
+    /* ← End insertion */
+
+    /* (Optional) override only the password if you still need it:
+    .login-box input[type="password"] {
+      width: 50% !important;
+      margin: 0 auto !important;
+      display: block !important;
+    }
+    */
     </style>
     """, unsafe_allow_html=True)
-    st.markdown('<div class="welcome-circle"><div class="welcome-text">Welcome<br>to<br>Kind Kitchen</div></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="welcome-circle"><div class="welcome-text">Kind Kitchen</div></div>', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
     login = st.button("Login")
