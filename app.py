@@ -209,31 +209,27 @@ def parse_recipe(text):
 def create_pdf(title, ingredients, method, shopping_categories=None):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font('helvetica', 'B', 12)
+    pdf.set_font('Arial', 'B', 12)
     pdf.cell(0, 10, sanitize_text(title), ln=True)
     pdf.ln(2)
 
-    pdf.set_font('helvetica', 'B', 11)
+    # Ingredients (no bullets or dashes)
+    pdf.set_font('Arial', 'B', 11)
     pdf.cell(0, 8, 'Ingredients', ln=True)
-    pdf.set_font('helvetica', '', 11)
+    pdf.set_font('Arial', '', 11)
     for item in ingredients:
-        pdf.cell(0, 6, f'- {item}', ln=True)
+        pdf.cell(0, 6, f"{item}", ln=True)  # <-- No "- " in front
     pdf.ln(4)
 
-    pdf.set_font('helvetica', 'B', 11)
+    # Method (only one set of numbers)
+    pdf.set_font('Arial', 'B', 11)
     pdf.cell(0, 8, 'Method', ln=True)
-    pdf.set_font('helvetica', '', 11)
+    pdf.set_font('Arial', '', 11)
     url_pat = r'(https?://[^\s]+)'
     for i, step in enumerate(method, 1):
-        pdf.write(6, f'{i}. ')
-        parts = re.split(url_pat, step)
-        for part in parts:
-            if re.match(url_pat, part):
-                pdf.set_text_color(0, 0, 255)
-                pdf.write(6, part, link=part)
-                pdf.set_text_color(0, 0, 0)
-            else:
-                pdf.write(6, part)
+        # Remove existing number at the start, if any
+        clean_step = re.sub(r'^\d+\.\s*', '', step)
+        pdf.write(6, f"{i}. {clean_step}")
         pdf.ln(8)
     pdf.ln(4)
 
