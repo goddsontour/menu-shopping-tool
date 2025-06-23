@@ -55,7 +55,7 @@ KEYWORDS = {
         'Lemon herb chicken thighs'
     ],
     'Vegetables and Fruits': [
-        'Apples', 'Bananas', 'Oranges', 'Mandarins', 'Pears', 'Peaches', 'Plums', 'Nectarines',
+        'Apples', 'Bananas', 'Oranges', 'Mandarins', 'Pears', 'Peaches', 'Parsnip', 'Plums', 'Nectarines',
         'Grapes', 'Kiwifruit', 'Pineapple', 'Mangoes', 'Watermelon', 'Rockmelon', 'Cantaloupe',
         'Strawberries', 'Blueberries', 'Raspberries', 'Blackberries', 'Lemons', 'Limes', 'Avocados',
         'Tomatoes', 'Cherry tomatoes', 'Grape tomatoes', 'Cucumbers', 'Zucchini', 'Carrots', 'Celery',
@@ -98,7 +98,7 @@ KEYWORDS = {
     'Pantry': [
         'Plain flour', 'Self-raising flour', 'Wholemeal flour', 'Bread flour', '00 flour', 'Rice flour',
         'Cornflour', 'Almond meal', 'Coconut flour', 'Polenta', 'Semolina', 'Rolled oats', 'Quick oats',
-        'Steel-cut oats', 'Muesli', 'Granola', 'Cereal', 'Pasta', 'Gluten-free pasta', 'Rice', 'Couscous',
+        'Steel-cut oats', 'Muesli', 'Granola', 'Cereal', 'Pasta', 'Gluten-free pasta', 'Rice', 'Pearl Couscous',
         'Quinoa', 'Bulgur', 'Barley', 'Lentils', 'Chickpeas', 'Black beans', 'Kidney beans', 'Cannellini beans',
         'Butter beans', 'Baked beans', 'Tinned tomatoes', 'Tomato paste', 'Tomato passata', 'Coconut milk',
         'Coconut cream', 'Evaporated milk', 'Condensed milk', 'UHT milk', 'Canned corn', 'Canned mushrooms',
@@ -129,7 +129,7 @@ KEYWORDS = {
         'Multivitamins', 'Health bars', 'Baby formula', 'Baby food jars', 'Pet food', 'Alfoil', 'Cling wrap',
         'Baking paper', 'Ziplock bags', 'Lunch bags', 'Paper towels', 'Tissues', 'Toilet paper', 'Dishwashing liquid',
         'Sponges', 'Cleaning sprays', 'Bin liners', 'Matches', 'Candles', 'Dried basil', 'Dried coriander',
-        'Dried parsley', 'Dried mint', 'Dried dill', 'Dried chives', 'Dried thyme', 'Dried rosemary',
+        'Dried parsley', 'Dried mint', 'Dried dill', 'Dried chives', 'Dried Thyme', 'Dried rosemary',
         'Dried oregano', 'Dried sage', 'Dried tarragon', 'Dried marjoram', 'Dried herbes de Provence',
         'Dried Italian herb mix', 'Dried mixed herbs', 'Dried bay leaves', 'Dried lemongrass', 'Dried fennel leaves',
         'Dried fenugreek leaves'
