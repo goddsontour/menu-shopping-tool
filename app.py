@@ -150,7 +150,7 @@ KEYWORDS = {
         'Crumpets', 'Croissants', 'Brioche buns', 'Muffins', 'Yorkshire puddings', 'Scones', 'Cakes',
         'Cheesecakes', 'Tarts', 'Desserts', 'Ice cream', 'Gelato', 'Sorbet', 'Yoghurt', 'Icy poles',
         'Fruit bars', 'Ice cubes', 'Baby food', 'Dog food', 'Cat food'
-    ]
+    ],
     'Bakery': [
         'White bread', 'Wholemeal bread', 'Multigrain bread', 'Soy and linseed bread', 'Rye bread',
         'Sourdough', 'Pane di casa', 'Ciabatta', 'Turkish bread', 'Brioche loaf', 'Vienna loaf',
@@ -166,6 +166,7 @@ KEYWORDS = {
         'Melting moments', 'Yo-yos', 'Scones', 'Pikelets', 'Waffles', 'Donuts', 'Mini donuts',
         'Jam-filled donuts', 'Iced donuts', 'Cinnamon donuts', 'Churros'
     ]
+    } 
 
 def sanitize_text(text):
     bad_chars = ['\u200b','\u00a0','\u2028','\u2029','\u2009','\u2002','\u2003','\u2004','\u2005','\u2006','\u2007']
