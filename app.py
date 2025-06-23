@@ -322,15 +322,15 @@ for txt in recipes:
         st.warning(f"Skipping '{title}': missing sections.")
         continue
 
-            display_recipe(title, ingredients, method)
-            cats = categorize_ingredients(ingredients)
-            display_shopping(cats)
+        display_recipe(title, ingredients, method)
+        cats = categorize_ingredients(ingredients)
+        display_shopping(cats)
 
-            pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
-            fn = f"{title.replace(' ', '_').lower()}.pdf"
-            all_pdfs.append((fn, pdf_bytes))
-            st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf')
-            st.markdown('---')
+        pdf_bytes = create_pdf(title, ingredients, method, shopping_categories=cats)
+        fn = f"{title.replace(' ', '_').lower()}.pdf"
+        all_pdfs.append((fn, pdf_bytes))
+        st.download_button('Download PDF', data=pdf_bytes, file_name=fn, mime='application/pdf')
+        st.markdown('---')
 
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, 'w') as zf:
