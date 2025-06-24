@@ -1,102 +1,105 @@
 import streamlit as st
 import re
+from streamlit.runtime.scriptrunner import RerunException  # for force rerun
+
+# Monkey-patch st.experimental_rerun if missing
+if not hasattr(st, 'experimental_rerun'):
+    def experimental_rerun():
+        # Force a script rerun by raising RerunException with dummy rerun_data
+        raise RerunException({})
+    st.experimental_rerun = experimental_rerun
 from fpdf import FPDF
 
-st.set_page_config(page_title="Login Test")
+# Configure page before any Streamlit calls
+st.set_page_config(page_title="Kind Kitchen Login")
 
-# Initialize authentication flag
+# Initialize authentication state
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
+# Render login screen
 def show_login():
-    # Inject custom CSS
     st.markdown("""
     <style>
-    /* Page background */
-    body, .stApp {
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
+      body, .stApp {
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+      .login-outer {
+        /* Removed full viewport centering to prevent scrolling */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        /* Optional: add a small top margin */
+        margin-top: 2vh;
     }
-    /* Full-screen flex centering for login */
-    .login-outer {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    /* Big circle behind "Kind Kitchen" */
-    .welcome-circle {
-      width: 50vmin;
-      height: 50vmin;
-      max-width: 90vh;
-      max-height: 90vh;
-      border-radius: 50%;
-      background: white;
-      box-shadow: 0 6px 48px #bbb4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 36px auto;
-    }
-    .welcome-text {
-      color: #009000;
-      font-size: 2.8rem;
-      font-weight: 800;
-      text-align: center;
-      letter-spacing: 0.5px;
-      font-family: 'DejaVu Sans', Arial, sans-serif;
-    }
-    /* Login box container */
-    .login-box {
-      width: 340px;
-      margin: 0 auto;
-    }
-    /* Username stays full-width */
-    .login-box input[type="text"] {
-      width: 100% !important;
-    }
-    /* Password field is half-width and centered */
-    .login-box div[data-testid="stTextInput"] > div > input[type="password"] {
-      width: 50% !important;
-      min-width: 0 !important;
-      margin: 0 auto !important;
-      display: block !important;
-    }
+      .welcome-circle {
+        /* Keep circle visible above login inputs without scrolling */
+        width: 40vmin;
+        height: 40vmin;
+        max-width: 80vh;
+        max-height: 80vh;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 6px 48px #bbb4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Reduced bottom margin so inputs are visible immediately */
+        margin: 2vh auto 1vh auto;
+      }
+      .welcome-text {
+        color: #009000;
+        font-size: 2.8rem;
+        font-weight: 800;
+        text-align: center;
+        letter-spacing: 0.5px;
+        font-family: 'DejaVu Sans', Arial, sans-serif;
+      }
+      .login-box {
+        width: 340px;
+        margin: 0 auto;
+      }
+      .login-box input[type="text"] {
+        width: 100% !important;
+      }
+      .login-box div[data-testid="stTextInput"] > div > input[type="password"] {
+        width: 50% !important;
+        min-width: 0 !important;
+        margin: 0 auto !important;
+        display: block !important;
+      }
     </style>
     """, unsafe_allow_html=True)
 
-    # HTML structure for login
     st.markdown('<div class="login-outer">', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="welcome-circle">'
-        '  <div class="welcome-text">Kind Kitchen</div>'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="welcome-circle"><div class="welcome-text">Kind Kitchen</div></div>', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
+
     pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
     login = st.button("Login")
+
     st.markdown('</div></div>', unsafe_allow_html=True)
 
-    # Authentication logic
     if login:
-        if pwd == st.secrets["app_password"]:
+        if pwd == st.secrets.get("app_password", ""):
             st.session_state.authenticated = True
             st.experimental_rerun()
         else:
             st.error("Incorrect password. Please try again.")
 
-# Show login if not authenticated
+# If not authenticated, show login and stop
 if not st.session_state.authenticated:
     show_login()
     st.stop()
 
 # Authenticated content
-st.success("You're logged in! This is your app content.")
+st.success("You're logged in! Welcome to Kind Kitchen.")
 
 # --------- FULL KEYWORDS DICTIONARY HERE! ---------
+
 KEYWORDS = {
     'Meat': [
         'Rump steak', 'Scotch fillet', 'Porterhouse steak', 'T-bone steak', 'Beef mince', 'Diced beef',
