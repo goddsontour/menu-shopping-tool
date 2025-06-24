@@ -96,7 +96,7 @@ if not st.session_state.authenticated:
     st.stop()
 
 # Authenticated content
-st.success("You're logged in! Welcome to Kind Kitchen.")
+st.success("Welcome to Kind Kitchen")
 
 # --------- FULL KEYWORDS DICTIONARY HERE! ---------
 
