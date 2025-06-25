@@ -18,14 +18,69 @@ if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 def show_login():
+    # Inject custom CSS for logo and styling
+    st.markdown("""
+    <style>
+      body, .stApp {
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+      .login-outer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 2vh;
+      }
+      .welcome-circle {
+        width: 40vmin;
+        height: 40vmin;
+        max-width: 80vh;
+        max-height: 80vh;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 6px 48px #bbb4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 2vh auto 1vh auto;
+      }
+      .welcome-text {
+        color: #009000;
+        font-size: 2.8rem;
+        font-weight: 800;
+        text-align: center;
+        letter-spacing: 0.5px;
+        font-family: 'DejaVu Sans', Arial, sans-serif;
+      }
+      .login-box {
+        width: 340px;
+        margin: 0 auto;
+      }
+      .login-box input[type="password"] {
+        width: 100% !important;
+      }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="login-outer">', unsafe_allow_html=True)
+    st.markdown('<div class="welcome-circle"><div class="welcome-text">Kind Kitchen</div></div>', unsafe_allow_html=True)
+    st.markdown('<div class="login-box">', unsafe_allow_html=True)
+
     pwd = st.text_input("Password", type="password", key="pw", label_visibility="visible")
-    if st.button("Login"):
+    login = st.button("Login")
+
+    st.markdown('</div></div>', unsafe_allow_html=True)
+
+    if login:
         if pwd == st.secrets.get("app_password", ""):
             st.session_state.authenticated = True
             st.experimental_rerun()
         else:
             st.error("Incorrect password. Please try again.")
 
+# Show login if not authenticated
 if not st.session_state.authenticated:
     show_login()
     st.stop()
