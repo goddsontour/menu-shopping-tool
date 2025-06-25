@@ -142,7 +142,7 @@ KEYWORDS = {
         'Crumpets', 'Croissants', 'Brioche buns', 'Muffins', 'Yorkshire puddings', 'Scones', 'Cakes',
         'Cheesecakes', 'Tarts', 'Desserts', 'Ice cream', 'Gelato', 'Sorbet', 'Yoghurt', 'Icy poles',
         'Fruit bars', 'Ice cubes', 'Baby food', 'Dog food', 'Cat food'
-    ].
+    ]
 }
 
 # ---- Helper functions ----
