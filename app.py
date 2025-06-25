@@ -18,6 +18,17 @@ if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 def show_login():
+    with st.form("login_form"):
+        # your logo/CSS here…
+        pwd = st.text_input("Password", type="password", key="pw")
+        submit = st.form_submit_button("Login")
+
+    if submit:
+        if pwd == st.secrets["app_password"]:
+            st.session_state.authenticated = True
+            st.experimental_rerun()
+        else:
+            st.error("Incorrect password.
     # Inject custom CSS for logo and styling
     st.markdown("""
     <style>
