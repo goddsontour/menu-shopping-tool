@@ -23,12 +23,12 @@ def show_login():
         pwd = st.text_input("Password", type="password", key="pw")
         submit = st.form_submit_button("Login")
 
-    if submit:
-        if pwd == st.secrets["app_password"]:
-            st.session_state.authenticated = True
-            st.experimental_rerun()
-        else:
-            st.error("Incorrect password.
+    if login:
+    if pwd == st.secrets.get("app_password", ""):
+        st.session_state.authenticated = True
+        st.experimental_rerun()
+    else:
+        st.error("Incorrect password. Please try again.")
     # Inject custom CSS for logo and styling
     st.markdown("""
     <style>
