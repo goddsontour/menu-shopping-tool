@@ -217,7 +217,7 @@ def sanitize_text(text):
     bad_chars = ['\u200b','\u00a0','\u2028','\u2029','\u2009','\u2002','\u2003','\u2004','\u2005','\u2006','\u2007']
     for c in bad_chars:
         text = text.replace(c, ' ')
-    ligatures = {' ':'ff','ﬁ':'fi','ﬂ':'fl'}
+    ligatures = {'ﬁ': 'fi', 'ﬂ': 'fl'}
     for lig, rep in ligatures.items():
         text = text.replace(lig, rep)
     text = text.replace('–','-').replace('—','-')
