@@ -1,35 +1,24 @@
 import streamlit as st
 import re
-from fractions import Fraction
 from streamlit.runtime.scriptrunner import RerunException  # for force rerun
-from fpdf import FPDF
 
 # Monkey-patch st.experimental_rerun if missing
 if not hasattr(st, 'experimental_rerun'):
     def experimental_rerun():
+        # Force a script rerun by raising RerunException with dummy rerun_data
         raise RerunException({})
     st.experimental_rerun = experimental_rerun
+from fpdf import FPDF
 
-# Configure page
+# Configure page before any Streamlit calls
 st.set_page_config(page_title="Kind Kitchen Login")
 
-# Authentication state
+# Initialize authentication state
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
+# Render login screen
 def show_login():
-    with st.form("login_form"):
-        # your logo/CSS here…
-        pwd = st.text_input("Password", type="password", key="pw")
-        submit = st.form_submit_button("Login")
-
-    if login:
-    if pwd == st.secrets.get("app_password", ""):
-        st.session_state.authenticated = True
-        st.experimental_rerun()
-    else:
-        st.error("Incorrect password. Please try again.")
-    # Inject custom CSS for logo and styling
     st.markdown("""
     <style>
       body, .stApp {
@@ -38,13 +27,16 @@ def show_login():
         padding: 0;
       }
       .login-outer {
+        /* Removed full viewport centering to prevent scrolling */
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
+        /* Optional: add a small top margin */
         margin-top: 2vh;
-      }
+    }
       .welcome-circle {
+        /* Keep circle visible above login inputs without scrolling */
         width: 40vmin;
         height: 40vmin;
         max-width: 80vh;
@@ -55,6 +47,7 @@ def show_login():
         display: flex;
         align-items: center;
         justify-content: center;
+        /* Reduced bottom margin so inputs are visible immediately */
         margin: 2vh auto 1vh auto;
       }
       .welcome-text {
@@ -69,12 +62,18 @@ def show_login():
         width: 340px;
         margin: 0 auto;
       }
-      .login-box input[type="password"] {
+      .login-box input[type="text"] {
         width: 100% !important;
+      }
+      .login-box div[data-testid="stTextInput"] > div > input[type="password"] {
+        width: 50% !important;
+        min-width: 0 !important;
+        margin: 0 auto !important;
+        display: block !important;
       }
     </style>
     """, unsafe_allow_html=True)
-    
+
     st.markdown('<div class="login-outer">', unsafe_allow_html=True)
     st.markdown('<div class="welcome-circle"><div class="welcome-text">Kind Kitchen</div></div>', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
@@ -91,14 +90,16 @@ def show_login():
         else:
             st.error("Incorrect password. Please try again.")
 
-# Show login if not authenticated
+# If not authenticated, show login and stop
 if not st.session_state.authenticated:
     show_login()
     st.stop()
 
+# Authenticated content
 st.success("You're logged in! Welcome to Kind Kitchen.")
 
 # --------- FULL KEYWORDS DICTIONARY HERE! ---------
+
 KEYWORDS = {
     'Meat': [
         'Rump steak', 'Scotch fillet', 'Porterhouse steak', 'T-bone steak', 'Beef mince', 'Diced beef',
@@ -208,11 +209,10 @@ KEYWORDS = {
         'Crumpets', 'Croissants', 'Brioche buns', 'Muffins', 'Yorkshire puddings', 'Scones', 'Cakes',
         'Cheesecakes', 'Tarts', 'Desserts', 'Ice cream', 'Gelato', 'Sorbet', 'Yoghurt', 'Icy poles',
         'Fruit bars', 'Ice cubes', 'Baby food', 'Dog food', 'Cat food'
-    ]
+    ],
 }
-
-# ---- Helper functions ----
-
+# --------- END KEYWORDS ---------
+    
 def sanitize_text(text):
     bad_chars = ['\u200b','\u00a0','\u2028','\u2029','\u2009','\u2002','\u2003','\u2004','\u2005','\u2006','\u2007']
     for c in bad_chars:
@@ -223,73 +223,43 @@ def sanitize_text(text):
     text = text.replace('–','-').replace('—','-')
     return ' '.join(text.split())
 
-
 def normalize(word):
     return re.sub(r'[^a-z0-9]', '', word.lower().strip())
-
 
 def categorize_ingredients(ingredients):
     categories = {sec: [] for sec in KEYWORDS}
     lookup = {}
     for sec, items in KEYWORDS.items():
-        ns = set(item.lower() for item in items)
-        lookup[sec] = ns | {i[:-1] for i in ns if i.endswith('s')}
+        ns = set([item.lower() for item in items])
+        lookup[sec] = ns | set([i[:-1] for i in ns if i.endswith('s')])
     for item in ingredients:
         clean = sanitize_text(item)
         base = re.sub(r'^[\d/]+\s*', '', clean).lower()
         placed = False
         for sec, keys in lookup.items():
-            if any(f" {k} " in f" {base} " for k in keys):
-                categories[sec].append(item)
-                placed = True
-                break
+            for k in keys:
+                if f" {k} " in f" {base} ":
+                    categories[sec].append(item)
+                    placed = True
+                    break
+            if placed: break
         if not placed:
             categories['Pantry'].append(item)
     return categories
-
 
 def parse_recipe(text):
     lines = [l.strip() for l in text.splitlines() if l.strip()]
     title = lines[0] if lines else 'Untitled'
     i1 = next((i for i,l in enumerate(lines) if l.lower().startswith('ingredients')), None)
     i2 = next((i for i,l in enumerate(lines) if l.lower().startswith('method')), None)
-    if i1 is None or i2 is None or i2 <= i1:
-        return title, [], []
+    if i1 is None or i2 is None or i2<=i1: return title, [], []
     ing = []
     for l in lines[i1+1:i2]:
         for part in re.split(r'[–—\-•]', l):
             c = sanitize_text(part)
-            if c:
-                ing.append(c)
+            if c: ing.append(c)
     meth = [sanitize_text(s) for s in lines[i2+1:]]
     return title, ing, meth
-
-# —— NEW: aggregate duplicate quantities ——
-def aggregate_ingredients(ingredients):
-    counts = {}
-    for item in ingredients:
-        text = sanitize_text(item)
-        m = re.match(r'^\s*([\d\.\/]+)\s+(.*)', text)
-        if m:
-            qty_str, name = m.groups()
-            try:
-                qty = float(Fraction(qty_str))
-            except Exception:
-                qty = float(qty_str)
-        else:
-            qty, name = 1, text
-        name = name.strip().lower()
-        key = name[:-1] if name.endswith('s') else name
-        counts[key] = counts.get(key, 0) + qty
-
-    out = []
-    for name, qty in counts.items():
-        qty = int(qty) if float(qty).is_integer() else qty
-        display_name = name + ('s' if qty != 1 else '')
-        out.append(f"{qty} {display_name}")
-    return out
-# ——————————————————————————————
-
 
 def create_pdf(title, ingredients, method, shopping_categories=None):
     pdf = FPDF()
@@ -313,8 +283,8 @@ def create_pdf(title, ingredients, method, shopping_categories=None):
         pdf.set_font('Arial','B',11); pdf.cell(0,8,'Links',ln=True)
         pdf.set_font('Arial','',11)
         for u in set(urls): pdf.write(6,u,link=u); pdf.ln(6)
+    pdf.add_page()
     if shopping_categories:
-        pdf.add_page()
         pdf.set_font('Arial','B',11); pdf.cell(0,8,'Shopping List',ln=True)
         pdf.set_font('Arial','',11)
         for sec, items in shopping_categories.items():
@@ -322,71 +292,50 @@ def create_pdf(title, ingredients, method, shopping_categories=None):
             pdf.set_font('Arial','',11)
             if items:
                 for it in items: pdf.cell(0,6,f'- {it}',ln=True)
-            else:
-                pdf.cell(0,6,'- none',ln=True)
+            else: pdf.cell(0,6,'- none',ln=True)
             pdf.ln(2)
     return pdf.output(dest='S').encode('latin1')
-
 
 def display_recipe(title, ingredients, method, index=0):
     st.subheader(title)
     st.markdown('**Ingredients**')
     for it in ingredients: st.markdown(it)
     st.markdown('**Method**')
-    for i,step in enumerate(method,1):
-        st.markdown(f"{i}. {re.sub(r'^\s*\d+[\.)]?\s*','',step)}")
+    for i,step in enumerate(method,1): st.markdown(f"{i}. {re.sub(r'^\s*\d+[\.)]?\s*','',step)}")
     cats = categorize_ingredients(ingredients)
     pdf_data = create_pdf(title, ingredients, method, cats)
-    fn = f"{title.replace(' ','_').lower()}.pdf"
+    fn=f"{title.replace(' ','_').lower()}.pdf"
     st.download_button('Download PDF', data=pdf_data, file_name=fn, mime='application/pdf', key=f"pdf{index}")
-
 
 def display_shopping(categories):
     st.header('Shopping List')
     for sec, items in categories.items():
         st.markdown(f'**{sec}**')
         if items:
-            for it in items:
-                st.markdown(f'- {it}')
+            for it in items: st.markdown(f'- {it}')
         else:
             st.markdown('- none')
 
-
 def main():
     st.title('Recipe & Shopping List Generator')
-    recipes = []
-
-    # Collect up to 4 recipes
-    tabs = st.tabs([f'Recipe {i+1}' for i in range(4)])
-    for i, tab in enumerate(tabs):
+    recipes=[]
+    tabs=st.tabs([f'Recipe {i+1}' for i in range(4)])
+    for i,tab in enumerate(tabs):
         with tab:
-            txt = st.text_area(f'Paste Recipe #{i+1}', key=f'r{i}', height=150)
-            if txt.strip():
-                recipes.append(txt)
-
-    files = st.file_uploader('Or upload up to 4 .txt files', type='txt', accept_multiple_files=True)
+            txt=st.text_area(f'Paste Recipe #{i+1}',key=f'r{i}',height=150)
+            if txt.strip(): recipes.append(txt)
+    files=st.file_uploader('Or upload up to 4 .txt files',type='txt',accept_multiple_files=True)
     if files:
-        for f in files[:4]:
-            recipes.append(f.read().decode())
-
-    # Generate button and logic
+        for f in files[:4]: recipes.append(f.read().decode())
     if st.button('Generate Recipe'):
-        if not recipes:
-            st.info('Enter at least one recipe or upload files.')
-            return
+        if not recipes: st.info('Enter at least one recipe or upload files.'); return
+        all_ing=[]
+        for idx,txt in enumerate(recipes):
+            title,ing,meth=parse_recipe(txt)
+            if not ing or not meth: st.warning(f"Skipping '{title}': missing sections."); continue
+            display_recipe(title,ing,meth,index=idx)
+            all_ing.extend(ing)
+        display_shopping(categorize_ingredients(all_ing))
 
-        all_ing = []
-        for idx, txt in enumerate(recipes):
-            title, ing, meth = parse_recipe(txt)
-            if not ing or not meth:
-                st.warning(f"Skipping '{title}': missing sections.")
-                continue
-            display_recipe(title, ing, meth, index=idx)
-
-        # —— Here’s the magic: aggregate first, then categorise & display
-        agg = aggregate_ingredients(all_ing)
-        cats = categorize_ingredients(agg)
-        display_shopping(cats)
-
-if __name__ == '__main__':
+if __name__=='__main__':
     main()
