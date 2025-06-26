@@ -71,7 +71,7 @@ def show_login():
     """, unsafe_allow_html=True)
 
     if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
+        st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
     st.markdown('<div class="login-outer">', unsafe_allow_html=True)
