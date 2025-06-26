@@ -70,6 +70,12 @@ def show_login():
     </style>
     """, unsafe_allow_html=True)
 
+    # Ensure login session is tracked
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+# Show login only if not logged in
+if not st.session_state.logged_in:
     st.markdown('<div class="login-outer">', unsafe_allow_html=True)
     st.markdown('<div class="welcome-circle"><div class="welcome-text">Kind Kitchen</div></div>', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
@@ -87,6 +93,9 @@ def show_login():
             st.experimental_rerun()
         else:
             st.error("Incorrect password. Please try again.")
+
+    # 🔒 Prevent running the rest of the app until logged in
+    st.stop()
 
 # If not authenticated, show login and stop
 if not st.session_state.authenticated:
