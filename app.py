@@ -294,25 +294,44 @@ def display_shopping(categories):
 
 def main():
     st.title('Recipe & Shopping List Generator')
-    recipes=[]
-    tabs=st.tabs([f'Recipe {i+1}' for i in range(4)])
-    for i,tab in enumerate(tabs):
+    recipes = []
+    tabs = st.tabs([f'Recipe {i+1}' for i in range(4)])
+    for i, tab in enumerate(tabs):
         with tab:
-            txt=st.text_area(f'Paste Recipe #{i+1}',key=f'r{i}',height=150)
-            if txt.strip(): recipes.append(txt)
-    files=st.file_uploader('Or upload up to 4 .txt files',type='txt',accept_multiple_files=True)
+            txt = st.text_area(f'Paste Recipe #{i+1}', key=f'r{i}', height=150)
+            if txt.strip():
+                recipes.append(txt)
+
+    files = st.file_uploader('Or upload up to 4 .txt files', type='txt', accept_multiple_files=True)
     if files:
-        for f in files[:4]: recipes.append(f.read().decode())
+        for f in files[:4]:
+            recipes.append(f.read().decode())
+
     image_file = st.file_uploader("Upload an image for the recipe", type=["png", "jpg", "jpeg"])
+
     if st.button('Generate Recipe'):
-        if not recipes: st.info('Enter at least one recipe or upload files.'); return
-        all_ing=[]
-        for idx,txt in enumerate(recipes):
-            title,ing,meth=parse_recipe(txt)
-            if not ing or not meth: st.warning(f"Skipping '{title}': missing sections."); continue
-            display_recipe(title,ing,meth,index=idx, image_file=image_file)
+        if not recipes:
+            st.info('Enter at least one recipe or upload files.')
+            return
+
+        all_ing = []
+        for idx, txt in enumerate(recipes):
+            if not isinstance(txt, str) or not txt.strip():
+                st.warning(f"Skipping empty or invalid recipe input at index {idx+1}")
+                continue
+            try:
+                title, ing, meth = parse_recipe(txt)
+                if not ing or not meth:
+                    st.warning(f"Skipping recipe: missing Ingredients or Method section.")
+                    continue
+            except Exception as e:
+                st.warning(f"Skipping recipe due to parsing error: {e}")
+                continue
+
+            display_recipe(title, ing, meth, index=idx, image_file=image_file)
             all_ing.extend(ing)
+
         display_shopping(categorize_ingredients(all_ing))
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
