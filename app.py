@@ -251,12 +251,12 @@ def create_pdf(title, ingredients, method, shopping_categories=None, image_file=
     pdf.set_font('Arial','B',12)
     pdf.cell(0,10,sanitize_text(title),ln=True)
     pdf.ln(2)
-    pdf.set_font('Arial','B',11); pdf.cell(0,8,'Ingredients',ln=True)
-    pdf.set_font('Arial','',11)
+    pdf.set_font('Arial','B',10); pdf.cell(0,8,'Ingredients',ln=True)
+    pdf.set_font('Arial','',10)
     for it in ingredients: pdf.cell(0,6,it,ln=True)
     pdf.ln(4)
-    pdf.set_font('Arial','B',11); pdf.cell(0,8,'Method',ln=True)
-    pdf.set_font('Arial','',11)
+    pdf.set_font('Arial','B',10); pdf.cell(0,8,'Method',ln=True)
+    pdf.set_font('Arial','',10)
     for i,step in enumerate(method,1):
         stp = re.sub(r'^\d+\.\s*','',step)
         pdf.write(6,f"{i}. {stp}")
@@ -264,17 +264,17 @@ def create_pdf(title, ingredients, method, shopping_categories=None, image_file=
     urls = re.findall(r'https?://[^\s]+', ' '.join(method))
     if urls:
         pdf.ln(4)
-        pdf.set_font('Arial','B',11); pdf.cell(0,8,'Links',ln=True)
-        pdf.set_font('Arial','',11)
+        pdf.set_font('Arial','B',10); pdf.cell(0,8,'Links',ln=True)
+        pdf.set_font('Arial','',10)
         for u in set(urls): pdf.write(6,u,link=u); pdf.ln(6)
 
     pdf.add_page()
     if shopping_categories:
-        pdf.set_font('Arial','B',11); pdf.cell(0,8,'Shopping List',ln=True)
-        pdf.set_font('Arial','',11)
+        pdf.set_font('Arial','B',10); pdf.cell(0,8,'Shopping List',ln=True)
+        pdf.set_font('Arial','',10)
         for sec, items in shopping_categories.items():
-            pdf.set_font('Arial','B',11); pdf.cell(0,6,sec,ln=True)
-            pdf.set_font('Arial','',11)
+            pdf.set_font('Arial','B',10); pdf.cell(0,6,sec,ln=True)
+            pdf.set_font('Arial','',10)
             if items:
                 for it in items: pdf.cell(0,6,f'- {it}',ln=True)
             else: pdf.cell(0,6,'- none',ln=True)
