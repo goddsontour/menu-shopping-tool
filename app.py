@@ -280,16 +280,16 @@ def create_pdf(title, ingredients, method, shopping_categories=None, image_file=
             else: pdf.cell(0,6,'- none',ln=True)
             pdf.ln(2)
 
-    if image_file:
-        try:
-            img = Image.open(image_file)
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
-                img.convert("RGB").save(tmp.name)
-                pdf.ln(10)
-                pdf.image(tmp.name, w=(pdf.w - 20) / 2.5)
-                os.remove(tmp.name)
-        except Exception as e:
-            print("Failed to insert image:", e)
+        if image_file:
+            try:
+                img = Image.open(image_file)
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+                    img.convert("RGB").save(tmp.name)
+                    pdf.ln(10)
+                    pdf.image(tmp.name, w=(pdf.w - 20) / 3.125)
+                    os.remove(tmp.name)
+            except Exception as e:
+                print("Failed to insert image:", e)
 
     return pdf.output(dest='S').encode('latin1')
 
