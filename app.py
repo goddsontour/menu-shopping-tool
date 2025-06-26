@@ -96,8 +96,6 @@ st.success("You're logged in! Welcome to Kind Kitchen.")
 
 # --------- FULL KEYWORDS DICTIONARY HERE! ---------
 KEYWORDS = {
-
-KEYWORDS = {
     'Meat': [
         'Rump steak', 'Scotch fillet', 'Porterhouse steak', 'T-bone steak', 'Beef mince', 'Diced beef',
         'Beef schnitzel', 'Beef stir-fry strips', 'Beef sausages', 'Corned beef silverside', 'Beef roast',
