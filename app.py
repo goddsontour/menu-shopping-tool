@@ -211,6 +211,23 @@ KEYWORDS = {
 def sanitize_text(text):
     return str(text).replace('\x00', '') if text is not None else ''
 
+def categorize_ingredients(ingredients):
+    categorized = {key: [] for key in KEYWORDS.keys()}
+    categorized['Other'] = []
+    for ing in ingredients:
+        found = False
+        for category, items in KEYWORDS.items():
+            if any(normalize(item) in normalize(ing) for item in items):
+                categorized[category].append(ing)
+                found = True
+                break
+        if not found:
+            categorized['Other'].append(ing)
+    return categorized
+
+def normalize(word):
+    return ''.join(e.lower() for e in word if e.isalnum())
+
 def parse_recipe(text):
     lines = [l.strip() for l in text.splitlines() if l.strip()]
     title = lines[0] if lines else 'Untitled'
