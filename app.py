@@ -5,10 +5,6 @@ from streamlit.runtime.scriptrunner import RerunException  # for force rerun
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-# ── Immediately after your imports ──
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-
 # Monkey-patch st.experimental_rerun if missing
 if not hasattr(st, 'experimental_rerun'):
     def experimental_rerun():
