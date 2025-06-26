@@ -80,7 +80,7 @@ def show_login():
     st.markdown('</div></div>', unsafe_allow_html=True)
 
     if login:
-        if pwd == "your_password":
+        if pwd == "kindkitchen2025":
             st.session_state.logged_in = True
             st.experimental_rerun()
         else:
