@@ -85,7 +85,8 @@ def show_login():
     if login:
         if pwd == st.secrets.get("app_password", ""):
             st.session_state.authenticated = True
-            st.experimental_rerun()
+            # ✅ Set a dummy query param to force refresh without clearing button click
+            st.experimental_set_query_params(login="true")
         else:
             st.error("Incorrect password. Please try again.")
 
