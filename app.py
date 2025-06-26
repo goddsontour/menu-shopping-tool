@@ -79,14 +79,14 @@ def show_login():
     login = st.button("Login")
 
     st.markdown('</div></div>', unsafe_allow_html=True)
-    
+
     # Authenticate
     if login:
         if pwd_input == "kindkitchen2025":
-        st.session_state.logged_in = True
-        st.experimental_rerun()
-    else:
-        st.error("Incorrect password. Please try again.")
+            st.session_state.logged_in = True
+            st.experimental_rerun()
+        else:
+            st.error("Incorrect password. Please try again.")
 
 # If not authenticated, show login and stop
 if not st.session_state.authenticated:
