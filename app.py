@@ -2,6 +2,10 @@ import streamlit as st
 import re
 from streamlit.runtime.scriptrunner import RerunException  # for force rerun
 
+# ── Immediately after your imports ──
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
 # Monkey-patch st.experimental_rerun if missing
 if not hasattr(st, 'experimental_rerun'):
     def experimental_rerun():
@@ -359,6 +363,11 @@ def main():
             all_ing.extend(ing)
 
         display_shopping(categorize_ingredients(all_ing))
+        
+# Only proceed if authenticated
+if not st.session_state.get("authenticated", False):
+    show_login()
+    st.stop()
 
 if __name__ == '__main__':
     main()
