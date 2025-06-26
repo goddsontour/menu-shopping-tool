@@ -209,21 +209,25 @@ KEYWORDS = {
 # --------- END KEYWORDS ---------
 
 def sanitize_text(text):
-    ...
-
-def normalize(word):
-    ...
-
-def categorize_ingredients(ingredients):
-    ...
+    return str(text).replace('\x00', '') if text is not None else ''
 
 def parse_recipe(text):
-    ...
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    title = lines[0] if lines else 'Untitled'
+    i1 = next((i for i, l in enumerate(lines) if l.lower().startswith('ingredients')), None)
+    i2 = next((i for i, l in enumerate(lines) if l.lower().startswith('method')), None)
+    if i1 is None or i2 is None or i2 <= i1:
+        return title, [], []
+    ingredients = lines[i1+1:i2]
+    method = lines[i2+1:]
+    return title, ingredients, method
 
 def create_pdf(title, ingredients, method, shopping_categories=None, image_file=None):
+    from fpdf import FPDF
     from PIL import Image
     import tempfile
     import os
+    import re
 
     pdf = FPDF()
     pdf.add_page()
@@ -246,6 +250,7 @@ def create_pdf(title, ingredients, method, shopping_categories=None, image_file=
         pdf.set_font('Arial','B',11); pdf.cell(0,8,'Links',ln=True)
         pdf.set_font('Arial','',11)
         for u in set(urls): pdf.write(6,u,link=u); pdf.ln(6)
+
     pdf.add_page()
     if shopping_categories:
         pdf.set_font('Arial','B',11); pdf.cell(0,8,'Shopping List',ln=True)
@@ -282,26 +287,6 @@ def display_recipe(title, ingredients, method, index=0, image_file=None):
     pdf_data = create_pdf(title, ingredients, method, cats, image_file=image_file)
     fn = f"{title.replace(' ','_').lower()}.pdf"
     st.download_button('Download PDF', data=pdf_data, file_name=fn, mime='application/pdf', key=f"pdf{index}")
-
-def display_shopping(categories):
-    st.header('Shopping List')
-    for sec, items in categories.items():
-        st.markdown(f'**{sec}**')
-        if items:
-            for it in items: st.markdown(f'- {it}')
-        else:
-            st.markdown('- none')
-
-def parse_recipe(text):
-    lines = [l.strip() for l in text.splitlines() if l.strip()]
-    title = lines[0] if lines else 'Untitled'
-    i1 = next((i for i, l in enumerate(lines) if l.lower().startswith('ingredients')), None)
-    i2 = next((i for i, l in enumerate(lines) if l.lower().startswith('method')), None)
-    if i1 is None or i2 is None or i2 <= i1:
-        return title, [], []
-    ingredients = lines[i1+1:i2]
-    method = lines[i2+1:]
-    return title, ingredients, method
 
 def display_shopping(categories):
     if not isinstance(categories, dict):
