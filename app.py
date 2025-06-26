@@ -286,7 +286,7 @@ def create_pdf(title, ingredients, method, shopping_categories=None, image_file=
             with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
                 img.convert("RGB").save(tmp.name)
                 pdf.ln(10)
-                pdf.image(tmp.name, w=(pdf.w - 20) / 2)
+                pdf.image(tmp.name, w=(pdf.w - 20) / 2.5)
                 os.remove(tmp.name)
         except Exception as e:
             print("Failed to insert image:", e)
@@ -360,3 +360,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
