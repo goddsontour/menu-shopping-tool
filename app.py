@@ -2,6 +2,9 @@ import streamlit as st
 import re
 from streamlit.runtime.scriptrunner import RerunException  # for force rerun
 
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
 # ── Immediately after your imports ──
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
