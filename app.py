@@ -70,29 +70,29 @@ def show_login():
     </style>
     """, unsafe_allow_html=True)
 
-    if "logged_in" not in st.session_state:
-        st.session_state.logged_in = False
+    # ✅ Ensure the key exists first
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
 
-if not st.session_state.logged_in:
+# ✅ Now it's safe to check
+if not st.session_state["logged_in"]:
     st.markdown('<div class="login-outer">', unsafe_allow_html=True)
     st.markdown('<div class="welcome-circle"><div class="welcome-text">Kind Kitchen</div></div>', unsafe_allow_html=True)
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
 
-    # Input and login button
     pwd_input = st.text_input("Password", type="password", label_visibility="visible")
     login = st.button("Login")
 
     st.markdown('</div></div>', unsafe_allow_html=True)
 
-    # Authenticate
     if login:
         if pwd_input == "kindkitchen2025":
-            st.session_state.logged_in = True
+            st.session_state["logged_in"] = True
             st.experimental_rerun()
         else:
             st.error("Incorrect password. Please try again.")
 
-    st.stop()  # 🚨 Prevent rest of app from loading unless logged in
+    st.stop()
 
 # If not authenticated, show login and stop
 if not st.session_state.authenticated:
