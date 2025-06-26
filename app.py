@@ -292,6 +292,30 @@ def display_shopping(categories):
         else:
             st.markdown('- none')
 
+def parse_recipe(text):
+    lines = [l.strip() for l in text.splitlines() if l.strip()]
+    title = lines[0] if lines else 'Untitled'
+    i1 = next((i for i, l in enumerate(lines) if l.lower().startswith('ingredients')), None)
+    i2 = next((i for i, l in enumerate(lines) if l.lower().startswith('method')), None)
+    if i1 is None or i2 is None or i2 <= i1:
+        return title, [], []
+    ingredients = lines[i1+1:i2]
+    method = lines[i2+1:]
+    return title, ingredients, method
+
+def display_shopping(categories):
+    if not isinstance(categories, dict):
+        st.warning("No shopping list could be generated.")
+        return
+    st.header('Shopping List')
+    for sec, items in categories.items():
+        st.markdown(f'**{sec}**')
+        if items:
+            for it in items:
+                st.markdown(f'- {it}')
+        else:
+            st.markdown('- none')
+
 def main():
     st.title('Recipe & Shopping List Generator')
     recipes = []
