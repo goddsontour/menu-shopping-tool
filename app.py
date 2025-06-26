@@ -364,11 +364,12 @@ def main():
 
         display_shopping(categorize_ingredients(all_ing))
         
-# Only proceed if authenticated
+# Authenticate before running the main app
 if not st.session_state.get("authenticated", False):
     show_login()
     st.stop()
 
 if __name__ == '__main__':
     main()
+
 
