@@ -27,16 +27,13 @@ def show_login():
         padding: 0;
       }
       .login-outer {
-        /* Removed full viewport centering to prevent scrolling */
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        /* Optional: add a small top margin */
         margin-top: 2vh;
-    }
+      }
       .welcome-circle {
-        /* Keep circle visible above login inputs without scrolling */
         width: 40vmin;
         height: 40vmin;
         max-width: 80vh;
@@ -47,7 +44,6 @@ def show_login():
         display: flex;
         align-items: center;
         justify-content: center;
-        /* Reduced bottom margin so inputs are visible immediately */
         margin: 2vh auto 1vh auto;
       }
       .welcome-text {
@@ -99,6 +95,7 @@ if not st.session_state.authenticated:
 st.success("You're logged in! Welcome to Kind Kitchen.")
 
 # --------- FULL KEYWORDS DICTIONARY HERE! ---------
+KEYWORDS = {
 
 KEYWORDS = {
     'Meat': [
@@ -209,59 +206,27 @@ KEYWORDS = {
         'Crumpets', 'Croissants', 'Brioche buns', 'Muffins', 'Yorkshire puddings', 'Scones', 'Cakes',
         'Cheesecakes', 'Tarts', 'Desserts', 'Ice cream', 'Gelato', 'Sorbet', 'Yoghurt', 'Icy poles',
         'Fruit bars', 'Ice cubes', 'Baby food', 'Dog food', 'Cat food'
-    ],
+    ]
 }
 # --------- END KEYWORDS ---------
-    
+
 def sanitize_text(text):
-    bad_chars = ['\u200b','\u00a0','\u2028','\u2029','\u2009','\u2002','\u2003','\u2004','\u2005','\u2006','\u2007']
-    for c in bad_chars:
-        text = text.replace(c, ' ')
-    ligatures = {'ﬁ': 'fi', 'ﬂ': 'fl'}
-    for lig, rep in ligatures.items():
-        text = text.replace(lig, rep)
-    text = text.replace('–','-').replace('—','-')
-    return ' '.join(text.split())
+    ...
 
 def normalize(word):
-    return re.sub(r'[^a-z0-9]', '', word.lower().strip())
+    ...
 
 def categorize_ingredients(ingredients):
-    categories = {sec: [] for sec in KEYWORDS}
-    lookup = {}
-    for sec, items in KEYWORDS.items():
-        ns = set([item.lower() for item in items])
-        lookup[sec] = ns | set([i[:-1] for i in ns if i.endswith('s')])
-    for item in ingredients:
-        clean = sanitize_text(item)
-        base = re.sub(r'^[\d/]+\s*', '', clean).lower()
-        placed = False
-        for sec, keys in lookup.items():
-            for k in keys:
-                if f" {k} " in f" {base} ":
-                    categories[sec].append(item)
-                    placed = True
-                    break
-            if placed: break
-        if not placed:
-            categories['Pantry'].append(item)
-    return categories
+    ...
 
 def parse_recipe(text):
-    lines = [l.strip() for l in text.splitlines() if l.strip()]
-    title = lines[0] if lines else 'Untitled'
-    i1 = next((i for i,l in enumerate(lines) if l.lower().startswith('ingredients')), None)
-    i2 = next((i for i,l in enumerate(lines) if l.lower().startswith('method')), None)
-    if i1 is None or i2 is None or i2<=i1: return title, [], []
-    ing = []
-    for l in lines[i1+1:i2]:
-        for part in re.split(r'[–—\-•]', l):
-            c = sanitize_text(part)
-            if c: ing.append(c)
-    meth = [sanitize_text(s) for s in lines[i2+1:]]
-    return title, ing, meth
+    ...
 
-def create_pdf(title, ingredients, method, shopping_categories=None):
+def create_pdf(title, ingredients, method, shopping_categories=None, image_file=None):
+    from PIL import Image
+    import tempfile
+    import os
+
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Arial','B',12)
@@ -294,17 +259,30 @@ def create_pdf(title, ingredients, method, shopping_categories=None):
                 for it in items: pdf.cell(0,6,f'- {it}',ln=True)
             else: pdf.cell(0,6,'- none',ln=True)
             pdf.ln(2)
+
+    if image_file:
+        try:
+            img = Image.open(image_file)
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+                img.convert("RGB").save(tmp.name)
+                pdf.ln(10)
+                pdf.set_font('Arial','B',11); pdf.cell(0,8,'Recipe Image',ln=True)
+                pdf.image(tmp.name, w=pdf.w - 20)
+                os.remove(tmp.name)
+        except Exception as e:
+            print("Failed to insert image:", e)
+
     return pdf.output(dest='S').encode('latin1')
 
-def display_recipe(title, ingredients, method, index=0):
+def display_recipe(title, ingredients, method, index=0, image_file=None):
     st.subheader(title)
     st.markdown('**Ingredients**')
     for it in ingredients: st.markdown(it)
     st.markdown('**Method**')
     for i,step in enumerate(method,1): st.markdown(f"{i}. {re.sub(r'^\s*\d+[\.)]?\s*','',step)}")
     cats = categorize_ingredients(ingredients)
-    pdf_data = create_pdf(title, ingredients, method, cats)
-    fn=f"{title.replace(' ','_').lower()}.pdf"
+    pdf_data = create_pdf(title, ingredients, method, cats, image_file=image_file)
+    fn = f"{title.replace(' ','_').lower()}.pdf"
     st.download_button('Download PDF', data=pdf_data, file_name=fn, mime='application/pdf', key=f"pdf{index}")
 
 def display_shopping(categories):
@@ -327,13 +305,14 @@ def main():
     files=st.file_uploader('Or upload up to 4 .txt files',type='txt',accept_multiple_files=True)
     if files:
         for f in files[:4]: recipes.append(f.read().decode())
+    image_file = st.file_uploader("Upload an image for the recipe", type=["png", "jpg", "jpeg"])
     if st.button('Generate Recipe'):
         if not recipes: st.info('Enter at least one recipe or upload files.'); return
         all_ing=[]
         for idx,txt in enumerate(recipes):
             title,ing,meth=parse_recipe(txt)
             if not ing or not meth: st.warning(f"Skipping '{title}': missing sections."); continue
-            display_recipe(title,ing,meth,index=idx)
+            display_recipe(title,ing,meth,index=idx, image_file=image_file)
             all_ing.extend(ing)
         display_shopping(categorize_ingredients(all_ing))
 
