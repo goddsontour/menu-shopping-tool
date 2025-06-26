@@ -332,7 +332,9 @@ def main():
         for f in files[:4]:
             recipes.append(f.read().decode())
 
+    st.markdown("Optionally add a photo to go with your recipe — it will appear on the PDF below the shopping list.")
     image_file = st.file_uploader("Upload an image for the recipe", type=["png", "jpg", "jpeg"])
+
 
     if st.button('Generate Recipe'):
         if not recipes:
