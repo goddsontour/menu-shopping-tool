@@ -287,7 +287,7 @@ def create_pdf(title, ingredients, method, shopping_categories=None, image_file=
                 img.convert("RGB").save(tmp.name)
                 pdf.ln(10)
                 pdf.set_font('Arial','B',11); pdf.cell(0,8,'Recipe Image',ln=True)
-                pdf.image(tmp.name, w=pdf.w - 20)
+                pdf.image(tmp.name, w=(pdf.w - 20) / 2)
                 os.remove(tmp.name)
         except Exception as e:
             print("Failed to insert image:", e)
